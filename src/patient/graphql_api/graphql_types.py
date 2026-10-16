@@ -31,6 +31,9 @@ __all__ = [
     "CreatePayload",
     "PatientInput",
     "RechnungInput",
+    "DrehbuchInput",
+    "FilmInput",
+    "SchauspielerInput",
     "Suchparameter",
 ]
 
@@ -119,6 +122,35 @@ class PatientInput:
 
     username: str
     """Benutzername."""
+
+
+@strawberry.input
+class SchauspielerInput:
+    """Schauspielerangaben für einen Film."""
+
+    vorname: str
+    nachname: str
+    geburtsdatum: date
+
+
+@strawberry.input
+class DrehbuchInput:
+    """Drehbuchangaben für einen Film."""
+
+    titel: str
+    autor: str
+    inhalt: str
+
+
+@strawberry.input
+class FilmInput:
+    """Filmdaten mit Schauspielern und genau einem Drehbuch."""
+
+    titel: str
+    erscheinungsjahr: int
+    genre: str
+    schauspieler: list[SchauspielerInput]
+    drehbuch: DrehbuchInput
 
 
 @strawberry.type

@@ -1,9 +1,11 @@
-# Beispielprojekt patient
+# Beispielprojekt Filmverwaltung
 
 ## Überblick
 
 Das ist die Dokumentation zu einem Beispielprojekt für das Wahlpflichtfach
-_Frameworks für Python_.
+_Frameworks für Python_. Die Beispieldomäne umfasst Filme, Schauspieler und
+Drehbücher: Ein Film kann mehrere Schauspieler haben und ist genau einem Drehbuch
+zugeordnet.
 
 ## Weiterführende Links
 

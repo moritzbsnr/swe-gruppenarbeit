@@ -17,48 +17,37 @@
 
 @startuml ER Diagramm
 
-' hide the spot
 hide circle
-
-' evtl. Prbleme mit Kraehenfuessen vermeiden
 skinparam linetype ortho
 
-entity "Patient" {
+entity "Film" {
   * id : integer <<generated>>
   --
-  * version: integer
+  * titel : text
+  * erscheinungsjahr : integer
+  * genre : text
+}
+
+entity "Schauspieler" {
+  * id : integer <<generated>>
+  --
+  * vorname : text
   * nachname : text
-  * email : text <<unique>>
-  * kategorie: integer
-  * has_newsletter: boolean
-    geburtsdatum: date
-    geschlecht: Geschlecht
-    familienstand: Familienstand
-    fachaerzte: JSON
-    homepage: text
-  * **username**: text <<FK>>
-  * erzeugt: timestamp
-  * aktualisiert: timestamp
+  * geburtsdatum : date
+  * **film_id** : integer <<FK>>
 }
 
-entity "Adresse" {
+entity "Drehbuch" {
   * id : integer <<generated>>
   --
-  * plz : text
-  * ort : text
-  * **patient_id**: integer <<FK>>
+  * titel : text
+  * autor : text
+  * inhalt : text
+  * **film_id** : integer <<FK, unique>>
 }
 
-entity "Rechnung" {
-  * id : integer <<generated>>
-  --
-  * betrag : decimal
-  * waehrung : text
-  * **patient_id**: integer <<FK>>
-}
-
-Patient ||.left.|| Adresse
-Patient ||..o{ Rechnung
+Film ||--|| Drehbuch
+Film ||--|{ Schauspieler
 
 footer (c) Juergen Zimmermann
 

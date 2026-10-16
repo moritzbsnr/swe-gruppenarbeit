@@ -19,24 +19,29 @@ Alternative: https://github.com/graphql-python/graphene.
 """
 
 from dataclasses import asdict
+from datetime import date
 from typing import Final
 lazy from collections.abc import Sequence
 
 import strawberry
 from fastapi import Request
 from loguru import logger
+from sqlalchemy import select
 from strawberry.extensions import PydanticErrorExtension
 from strawberry.fastapi import GraphQLRouter
 lazy from strawberry.types import Info
 
 from patient.config.graphql import graphql_ide
+from patient.entity import Drehbuch, Film, Schauspieler
 from patient.graphql_api.graphql_types import (
     CreatePayload,
+    FilmInput,
     LoginResult,
     PatientInput,
     Suchparameter,
 )
 from patient.repository import Pageable, PatientRepository, PatientSuchparameter
+from patient.repository.session_factory import Session
 from patient.router.patient_model import PatientModel
 from patient.security import Role, TokenService, UserService
 from patient.service import (
@@ -71,6 +76,32 @@ _write_service: PatientWriteService = PatientWriteService(
     user_service=_user_service,
 )
 _token_service: Final = TokenService()
+
+
+@strawberry.type
+class SchauspielerGraphQL:
+    id: int
+    vorname: str
+    nachname: str
+    geburtsdatum: date
+
+
+@strawberry.type
+class DrehbuchGraphQL:
+    id: int
+    titel: str
+    autor: str
+    inhalt: str
+
+
+@strawberry.type
+class FilmGraphQL:
+    id: int
+    titel: str
+    erscheinungsjahr: int
+    genre: str
+    schauspieler: list[SchauspielerGraphQL]
+    drehbuch: DrehbuchGraphQL
 
 
 @strawberry.type  # vgl. @dataclass
@@ -144,6 +175,36 @@ class Query:
         logger.debug("{}", patienten_dto)
         return patienten_dto.content
 
+    @strawberry.field
+    def filme(self) -> list[FilmGraphQL]:
+        """Filme einschließlich Schauspielern und Drehbüchern lesen."""
+        with Session() as session:
+            filme = session.scalars(select(Film)).all()
+            return [
+                FilmGraphQL(
+                    id=film.id if film.id is not None else -1,
+                    titel=film.titel,
+                    erscheinungsjahr=film.erscheinungsjahr,
+                    genre=film.genre,
+                    schauspieler=[
+                        SchauspielerGraphQL(
+                            id=actor.id if actor.id is not None else -1,
+                            vorname=actor.vorname,
+                            nachname=actor.nachname,
+                            geburtsdatum=actor.geburtsdatum,
+                        )
+                        for actor in film.schauspieler
+                    ],
+                    drehbuch=DrehbuchGraphQL(
+                        id=film.drehbuch.id if film.drehbuch.id is not None else -1,
+                        titel=film.drehbuch.titel,
+                        autor=film.drehbuch.autor,
+                        inhalt=film.drehbuch.inhalt,
+                    ),
+                )
+                for film in filme
+            ]
+
 
 @strawberry.type
 class Mutation:
@@ -169,6 +230,32 @@ class Mutation:
 
         logger.debug("{}", payload)
         return payload
+
+    @strawberry.mutation
+    def film_erstellen(self, film_input: FilmInput) -> int:
+        """Film mit Besetzung und Drehbuch anlegen; Rückgabe ist die Film-ID."""
+        film = Film(
+            titel=film_input.titel,
+            erscheinungsjahr=film_input.erscheinungsjahr,
+            genre=film_input.genre,
+            schauspieler=[
+                Schauspieler(
+                    vorname=actor.vorname,
+                    nachname=actor.nachname,
+                    geburtsdatum=actor.geburtsdatum,
+                )
+                for actor in film_input.schauspieler
+            ],
+            drehbuch=Drehbuch(
+                titel=film_input.drehbuch.titel,
+                autor=film_input.drehbuch.autor,
+                inhalt=film_input.drehbuch.inhalt,
+            ),
+        )
+        with Session() as session:
+            session.add(film)
+            session.commit()
+            return film.id if film.id is not None else -1
 
     # Mutation, weil evtl. der Login-Zeitpunkt gespeichert wird
     @strawberry.mutation

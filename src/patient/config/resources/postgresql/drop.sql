@@ -22,6 +22,9 @@ DROP INDEX IF EXISTS
 
 -- https://www.postgresql.org/docs/current/sql-droptable.html
 DROP TABLE IF EXISTS
+    drehbuch,
+    schauspieler,
+    film,
     adresse,
     rechnung,
     patient;
