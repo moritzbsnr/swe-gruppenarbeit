@@ -17,66 +17,64 @@
 
 @startuml Schichtenarchitektur
 
-package patient #DDDDDD {
+package film #DDDDDD {
     package rest #FFFFFF {
-        [@router.get()\nget_by_id()\n\n@router.get()\nget()\n\n@router.get()\nget_nachnamen()] as PatientGetController
-        [@router.post()\npost()\n\n@router.put()\nput()\n\n@router.delete()\ndelete_by_id()] as PatientWriteController
+        [@router.get()\nget_by_id()\n\n@router.get()\nget()\n\n@router.get()\nget_nachnamen()] as FilmGetController
+        [@router.post()\npost()\n\n@router.put()\nput()\n\n@router.delete()\ndelete_by_id()] as FilmWriteController
         [@router.get()\nliveness()\n\n@router.get()\nreadiness()] as HealthController
 
-        [PatientGetController] -right[hidden]-> [PatientWriteController]
+        [FilmGetController] -right[hidden]-> [FilmWriteController]
     }
 
     package service #FFFFFF {
-        [find_by_id()\nfind()\nfind_nachnamen()] as PatientReadService
-        [create()\nupdate()\ndelete()] as PatientWriteService
+        [find_by_id()\nfind()\nfind_nachnamen()] as FilmReadService
+        [create()\nupdate()\ndelete()] as FilmWriteService
     }
 
-    [PatientGetController] --> [PatientReadService]
-    [PatientWriteController] --> [PatientWriteService]
+    [FilmGetController] --> [FilmReadService]
+    [FilmWriteController] --> [FilmWriteService]
 
     package repository #FFFFFF {
         [find_by_id()\nfind()\nexists_email()\nfind_nachnamen()\ncreate()\nupdate()\ndelete_by_id()\ncheck_db_connection()] as PatientRepository
     }
 
-    [PatientReadService] --> [PatientRepository]
-    [PatientWriteService] --> [PatientRepository]
-    [HealthController] --> [PatientRepository]
+    [FilmReadService] --> [FilmRepository]
+    [FilmWriteService] --> [FilmRepository]
+    [HealthController] --> [FilmRepository]
 
     package entity #FFFFFF {
-        [Patient]
-        [Adresse]
-        [Rechnung]
+        [Film]
+        [Drehbuch]
+        [Schauspieler]
 
-        [Patient] -right[hidden]-> [Adresse]
-        [Adresse] -down[hidden]-> [Rechnung]
+        [Film] -right[hidden]-> [Drehbuch]
+        [Drehbuch] -down[hidden]-> [Schauspieler]
     }
 
-    [PatientGetController] ..> [Patient]
-    [PatientWriteController] ..> [Patient]
-    [PatientReadService] .left.> [Patient]
-    [PatientWriteService] ..> [Patient]
-    [PatientRepository] ..> [Patient]
+    [FilmGetController] ..> [Film]
+    [FilmWriteController] ..> [Film]
+    [FilmReadService] .left.> [Film]
+    [FilmWriteService] ..> [Film]
+    [FilmRepository] ..> [Film]
 }
 
-RESTClient ~~> [PatientGetController]
-RESTClient ~~> [PatientWriteController]
+RESTClient ~~> [FilmGetController]
+RESTClient ~~> [FilmWriteController]
 RESTClient ~~> [HealthController]
 
 cloud {
     [SQLAlchemy\n(OR-Mapping)] as SQLAlchemy
 }
 
-[PatientRepository] ~down~> [SQLAlchemy]
+[FilmRepository] ~down~> [SQLAlchemy]
 entity ~~> [SQLAlchemy]
 
-database "DB patient" as db {
-    [Tabelle patient]
-    [Tabelle adresse]
-    [Tabelle rechnung]
+database "DB film" as db {
+    [Tabelle film]
+    [Tabelle drehbuch]
+    [Tabelle schauspieler]
 }
 
 [SQLAlchemy] ~down~> db
-
-footer (c) Juergen Zimmermann
 
 @enduml

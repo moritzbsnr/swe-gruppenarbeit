@@ -19,18 +19,16 @@
 
 actor Gast
 actor Admin
-actor Patient
 
-rectangle patient {
-    Gast --> (Patient anlegen)
-    Admin --> (Patient suchen)
-    Admin --> (Patient aendern)
-    Admin --> (Patient loeschen)
-    Patient --> (Patient suchen)
-    Patient --> (Patient aendern)
-    Patient --> (Patient loeschen)
+rectangle film {
+    Gast --> (Film anlegen)
+    Gast --> (Film suchen)
+    Gast --> (Film aendern)
+    Gast --> (Film loeschen)
+    Admin --> (Film anlegen)
+    Admin --> (Film suchen)
+    Admin --> (Film aendern)
+    Admin --> (Film loeschen)
 }
-
-footer (c) Jürgen Zimmermann
 
 @enduml

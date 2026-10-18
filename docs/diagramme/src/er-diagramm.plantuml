@@ -25,16 +25,6 @@ entity "Film" {
   --
   * titel : text
   * erscheinungsjahr : integer
-  * genre : text
-}
-
-entity "Schauspieler" {
-  * id : integer <<generated>>
-  --
-  * vorname : text
-  * nachname : text
-  * geburtsdatum : date
-  * **film_id** : integer <<FK>>
 }
 
 entity "Drehbuch" {
@@ -42,13 +32,19 @@ entity "Drehbuch" {
   --
   * titel : text
   * autor : text
-  * inhalt : text
-  * **film_id** : integer <<FK, unique>>
+  * seitenzahl : integer
+  * **Film_id**: integer <<FK>>
+}
+
+entity "Schauspieler" {
+  * id : integer <<generated>>
+  --
+  * vorname : text
+  * nachname : text
+  * **film_id** : integer <<FK>>
 }
 
 Film ||--|| Drehbuch
 Film ||--|{ Schauspieler
-
-footer (c) Juergen Zimmermann
 
 @enduml

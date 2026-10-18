@@ -73,7 +73,7 @@
 #           uv publish --token <UV_PUBLISH_TOKEN>
 
 [project]
-name = "patient"
+name = "film"
 version = "2026.10.1"
 description = "Beispiel mit FastAPI, PostgreSQL, Keycloak, Pydantic, Strawberry und uv"
 readme = "README.md"
@@ -81,7 +81,8 @@ authors = [
     { name = "Juergen Zimmermann", email = "Juergen.Zimmermann@h-ka.de" },
 ]
 maintainers = [
-    { name = "Jürgen Zimmermann", email = "Juergen.Zimmermann@h-ka.de" },
+    { name = "Moritz Büsener", email = "bumo1013@h-ka.de" },
+    { name = "Mael Akin", email = "akma1014@h-ka.de"},
 ]
 requires-python = ">=3.15"
 keywords = [
@@ -205,7 +206,7 @@ dependencies = [
 ]
 
 [project.scripts]
-patient = "patient:main"
+film = "film:main"
 
 [build-system]
 # https://docs.astral.sh/uv/concepts/build-backend/#using-the-uv-build-backend
@@ -216,7 +217,7 @@ build-backend = "uv_build"
 homepage = "https://www.h-ka.de"
 documentation = "https://readthedocs.org"
 repository = "https://github.com"
-changelog = "https://github.com/juergenzimmermann/patient/blob/master/CHANGELOG.md"
+changelog = "https://github.com/juergenzimmermann/film/blob/master/CHANGELOG.md"
 
 # https://packaging.python.org/en/latest/specifications/dependency-groups
 # https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups
@@ -283,10 +284,10 @@ lint = [
 
 # https://coverage.readthedocs.io/en/latest/source.html
 [tool.coverage.run]
-include = ["src/patient/service/*"]
+include = ["src/film/service/*"]
 
 [tool.fastapi]
-entrypoint = "patient.main:app"
+entrypoint = "film.main:app"
 
 # https://pyrefly.org/en/docs/configuration
 [tool.pyrefly]
@@ -303,7 +304,7 @@ preset = "strict"
 minversion = "9.1.0"
 # fuer Unit-Tests
 pythonpath = ["src"]
-testpaths = ["tests/unit/patient/service", "tests/integration"]
+testpaths = ["tests/unit/film/service", "tests/integration"]
 # -m: nur Tests mit dem spezifizierten _Marker_ ausführen
 # -r A: zusaetzliche Zusammenfassung anzeigen (A = All)
 # --html erfordert pytest-html
@@ -402,7 +403,7 @@ combine-as-imports = true
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["assert", "undocumented-public-function"]
 "tests/integration/**/*_test.py" = ["raise-vanilla-args"]
-"tests/unit/patient/service/*_test.py" = ["unused-lambda-argument"]
+"tests/unit/film/service/*_test.py" = ["unused-lambda-argument"]
 
 [tool.ruff.lint.pylint]
 max-statements-in-try = 7
