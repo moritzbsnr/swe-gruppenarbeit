@@ -22,7 +22,7 @@
 # Aufruf:   uv run patient
 #               uv run python -m patient
 #               uv run fastapi dev src/patient
-#               uv run uvicorn src.patient:app --http zttp --http2 --ssl-certfile=src\patient\config\resources\tls\certificate.crt --ssl-keyfile=src\patient\config\resources\tls\key.pem
+#               uv run uvicorn src.film:app --http zttp --http2 --ssl-certfile=src\film\config\resources\tls\certificate.crt --ssl-keyfile=src\film\config\resources\tls\key.pem
 #
 #           curl -v --http2 --insecure `
 #               --oauth2-bearer <access_token> `

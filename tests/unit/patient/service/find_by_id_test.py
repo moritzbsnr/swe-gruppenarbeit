@@ -23,9 +23,9 @@ from zoneinfo import ZoneInfo
 import pytest
 lazy from pytest_mock import MockerFixture
 
-from patient.entity import Adresse, Familienstand, Geschlecht, Patient
-from patient.security import Role, User
-from patient.service import ForbiddenError, NotFoundError, PatientDTO, PatientService
+from film.entity import Adresse, Familienstand, Geschlecht, Patient
+from film.security import Role, User
+from film.service import ForbiddenError, NotFoundError, PatientDTO, PatientService
 
 timezone = ZoneInfo("Europe/Berlin")
 
@@ -35,7 +35,7 @@ def session_mock(mocker: MockerFixture):
     session = mocker.Mock()
     # Patching von "with Session() as session:" in patient_service.py
     mocker.patch(
-        "patient.service.patient_service.Session",
+        "film.service.patient_service.Session",
         return_value=mocker.MagicMock(
             __enter__=lambda self: session,
             __exit__=lambda self, exc_type, exc, tb: None,
