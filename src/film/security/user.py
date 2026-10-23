@@ -17,7 +17,7 @@
 
 from dataclasses import dataclass
 
-lazy from patient.security.role import Role
+lazy from film.security.role import Role
 
 
 @dataclass(frozen=True, eq=False, slots=True, kw_only=True)

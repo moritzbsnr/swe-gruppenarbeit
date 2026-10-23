@@ -20,8 +20,8 @@ lazy from datetime import date
 
 import strawberry
 
-from patient.entity import Facharzt, Familienstand, Geschlecht, Patient
-from patient.service.adresse_dto import AdresseDTO
+from film.entity import Facharzt, Familienstand, Geschlecht, Patient
+from film.service.adresse_dto import AdresseDTO
 
 __all__ = ["PatientDTO"]
 
@@ -68,21 +68,21 @@ class PatientDTO:
         :rtype: PatientDTO
         """
         return cls(
-            id=patient.id if patient.id is not None else -1,
-            version=patient.version,
-            nachname=patient.nachname,
-            email=patient.email,
-            kategorie=patient.kategorie,
-            has_newsletter=patient.has_newsletter,
-            geburtsdatum=patient.geburtsdatum,
-            homepage=patient.homepage,
-            geschlecht=patient.geschlecht,
-            familienstand=patient.familienstand,
-            adresse=AdresseDTO.from_adresse(patient.adresse),
+            id=film.id if film.id is not None else -1,
+            version=film.version,
+            nachname=film.nachname,
+            email=film.email,
+            kategorie=film.kategorie,
+            has_newsletter=film.has_newsletter,
+            geburtsdatum=film.geburtsdatum,
+            homepage=film.homepage,
+            geschlecht=film.geschlecht,
+            familienstand=film.familienstand,
+            adresse=AdresseDTO.from_adresse(film.adresse),
             fachaerzte=(
-                [Facharzt[facharzt] for facharzt in patient.fachaerzte_json]
-                if patient.fachaerzte_json is not None
+                [Facharzt[facharzt] for facharzt in film.fachaerzte_json]
+                if film.fachaerzte_json is not None
                 else []
             ),
-            username=patient.username if patient.username is not None else "N/A",
+            username=film.username if film.username is not None else "N/A",
         )

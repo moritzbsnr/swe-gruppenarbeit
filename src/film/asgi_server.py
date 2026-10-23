@@ -19,13 +19,13 @@ from ssl import PROTOCOL_TLS_SERVER
 
 import uvicorn
 
-from patient.config import (
+from film.config import (
     host_binding,
     port,
     tls_certfile,
     tls_keyfile,
 )
-from patient.fastapi_app import app  # ruff: ignore[unused-import]
+from film.fastapi_app import app  # ruff: ignore[unused-import]
 
 __all__ = ["run"]
 

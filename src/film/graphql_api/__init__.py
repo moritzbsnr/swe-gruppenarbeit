@@ -1,13 +1,13 @@
 """Modul für die GraphQL-Schnittstelle."""
 
-from patient.graphql_api.graphql_types import (
+from film.graphql_api.graphql_types import (
     AdresseInput,
     CreatePayload,
     PatientInput,
     RechnungInput,
     Suchparameter,
 )
-from patient.graphql_api.schema import Mutation, Query, graphql_router
+from film.graphql_api.schema import Mutation, Query, graphql_router
 
 __all__ = [
     "AdresseInput",

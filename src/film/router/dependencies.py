@@ -19,11 +19,11 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from patient.repository.patient_repository import PatientRepository
-from patient.security.dependencies import get_user_service
-from patient.service.patient_service import PatientService
-from patient.service.patient_write_service import PatientWriteService
-lazy from patient.security.user_service import UserService
+from film.repository.patient_repository import PatientRepository
+from film.security.dependencies import get_user_service
+from film.service.patient_service import PatientService
+from film.service.patient_write_service import PatientWriteService
+lazy from film.security.user_service import UserService
 
 
 def get_repository() -> PatientRepository:

@@ -25,7 +25,7 @@ Manager _uv_ zur Laufzeit nicht benötigt wird und deshalb das Image klein gehal
 werden kann.
 """
 
-from patient.asgi_server import run
+from film.asgi_server import run
 
 __all__ = ["run"]
 

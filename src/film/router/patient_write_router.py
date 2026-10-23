@@ -20,14 +20,14 @@ from typing import Annotated, Final
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response, status
 from loguru import logger
 
-from patient.problem_details import ProblemDetails
-from patient.router.constants import IF_MATCH, IF_MATCH_MIN_LEN
-from patient.router.dependencies import get_write_service
-from patient.security import Role, RolesRequired
-from patient.service import send_mail
-lazy from patient.router.patient_model import PatientModel
-lazy from patient.router.patient_update_model import PatientUpdateModel
-lazy from patient.service import PatientWriteService
+from film.problem_details import ProblemDetails
+from film.router.constants import IF_MATCH, IF_MATCH_MIN_LEN
+from film.router.dependencies import get_write_service
+from film.security import Role, RolesRequired
+from film.service import send_mail
+lazy from film.router.patient_model import PatientModel
+lazy from film.router.patient_update_model import PatientUpdateModel
+lazy from film.service import PatientWriteService
 
 __all__ = ["patient_write_router"]
 

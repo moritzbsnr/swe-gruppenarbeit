@@ -22,7 +22,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
 
-from patient.config.db import (
+from film.config.db import (
     db_connect_args,
     db_log_statements,
     db_url,

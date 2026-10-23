@@ -21,7 +21,7 @@ lazy from datetime import date
 from loguru import logger
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl, StringConstraints
 
-from patient.entity import Facharzt, Familienstand, Geschlecht, Patient
+from film.entity import Facharzt, Familienstand, Geschlecht, Patient
 
 __all__ = ["PatientUpdateModel"]
 

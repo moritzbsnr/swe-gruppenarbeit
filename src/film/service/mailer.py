@@ -25,8 +25,8 @@ from uuid import uuid4
 
 from loguru import logger
 
-from patient.config import mail_config, receiver, sender
-lazy from patient.service.patient_dto import PatientDTO
+from film.config import mail_config, receiver, sender
+lazy from film.service.patient_dto import PatientDTO
 
 __all__ = ["send_mail"]
 

@@ -20,7 +20,7 @@ lazy from decimal import Decimal
 
 import strawberry
 
-lazy from patient.entity import (
+lazy from film.entity import (
     Facharzt,
     Familienstand,
     Geschlecht,

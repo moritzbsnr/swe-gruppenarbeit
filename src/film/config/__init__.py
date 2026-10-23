@@ -7,17 +7,17 @@ from film.config.db import (
     db_url,
     db_url_admin,
 )
-from patient.config.dev_modus import dev_db_populate, dev_keycloak_populate
-from patient.config.excel import excel_enabled
-from patient.config.graphql import graphql_ide
-from patient.config.keycloak import (
+from film.config.dev_modus import dev_db_populate, dev_keycloak_populate
+from film.config.excel import excel_enabled
+from film.config.graphql import graphql_ide
+from film.config.keycloak import (
     csv_config,
     keycloak_admin_config,
     keycloak_config,
 )
-from patient.config.mail import mail_config, receiver, sender
-from patient.config.server import host_binding, port, profiling
-from patient.config.tls import tls_certfile, tls_keyfile
+from film.config.mail import mail_config, receiver, sender
+from film.config.server import host_binding, port, profiling
+from film.config.tls import tls_certfile, tls_keyfile
 
 __all__ = [
     "csv_config",

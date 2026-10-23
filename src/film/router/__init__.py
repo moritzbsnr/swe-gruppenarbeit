@@ -16,22 +16,22 @@
 
 lazy from collections.abc import Sequence
 
-from patient.router.health_router import liveness, readiness, router as health_router
-from patient.router.hello_router import router as hello_router
-from patient.router.patient_router import (
+from film.router.health_router import liveness, readiness, router as health_router
+from film.router.hello_router import router as hello_router
+from film.router.patient_router import (
     get,
     get_by_id,
     get_nachnamen,
     patient_router,
     query,
 )
-from patient.router.patient_write_router import (
+from film.router.patient_write_router import (
     delete_by_id,
     patient_write_router,
     post,
     put,
 )
-from patient.router.shutdown_router import router as shutdown_router, shutdown
+from film.router.shutdown_router import router as shutdown_router, shutdown
 
 __all__: Sequence[str] = [
     "delete_by_id",

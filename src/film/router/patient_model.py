@@ -20,10 +20,10 @@ from typing import Annotated, Final, override
 from loguru import logger
 from pydantic import ConfigDict, Field, StringConstraints
 
-from patient.router.patient_update_model import PatientUpdateModel
-lazy from patient.entity import Facharzt, Patient
-lazy from patient.router.adresse_model import AdresseModel
-lazy from patient.router.rechnung_model import RechnungModel
+from film.router.patient_update_model import PatientUpdateModel
+lazy from film.entity import Facharzt, Patient
+lazy from film.router.adresse_model import AdresseModel
+lazy from film.router.rechnung_model import RechnungModel
 
 __all__ = ["PatientModel"]
 
@@ -62,10 +62,10 @@ class PatientModel(PatientUpdateModel):
         patient: Final = super().to_patient(
             fachaerzte=self.fachaerzte if self.fachaerzte is not None else [],
         )
-        patient.adresse = self.adresse.to_adresse()
-        patient.rechnungen = [
+        film.adresse = self.adresse.to_adresse()
+        film.rechnungen = [
             rechnung_model.to_rechnung() for rechnung_model in self.rechnungen
         ]
-        patient.username = self.username
+        film.username = self.username
         logger.debug("patient={}", patient)
         return patient

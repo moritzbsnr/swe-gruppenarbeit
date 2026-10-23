@@ -19,9 +19,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from patient.repository import PatientRepository
-from patient.security import UserService
-from patient.service import PatientService, PatientWriteService
+from film.repository import PatientRepository
+from film.security import UserService
+from film.service import PatientService, PatientWriteService
 
 if TYPE_CHECKING:
     from keycloak import KeycloakAdmin
@@ -61,7 +61,7 @@ def patient_service(patient_repository: PatientRepository) -> PatientService:
 def keycloak_admin_mock(mocker: MockerFixture) -> KeycloakAdmin:
     """Patching von KeycloakAdmin() innerhalb von UserService."""
     keycloak_admin_cls_mock = mocker.patch(
-        "patient.security.user_service.KeycloakAdmin",
+        "film.security.user_service.KeycloakAdmin",
     )
     return keycloak_admin_cls_mock.return_value
 

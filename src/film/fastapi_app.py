@@ -30,36 +30,36 @@ from loguru import logger
 from prometheus_fastapi_instrumentator import Instrumentator
 from pyinstrument import Profiler
 
-from patient.banner import banner
-from patient.config import (
+from film.banner import banner
+from film.config import (
     dev_db_populate,
     dev_keycloak_populate,
     profiling,
 )
-from patient.config.dev.db_populate import db_populate
-from patient.config.dev.db_populate_router import router as db_populate_router
-from patient.config.dev.keycloak_populate import keycloak_populate
-from patient.config.dev.keycloak_populate_router import (
+from film.config.dev.db_populate import db_populate
+from film.config.dev.db_populate_router import router as db_populate_router
+from film.config.dev.keycloak_populate import keycloak_populate
+from film.config.dev.keycloak_populate_router import (
     router as keycloak_populate_router,
 )
-from patient.graphql_api import graphql_router
-from patient.problem_details import ProblemDetails
-from patient.repository.session_factory import engine
-from patient.router import (
+from film.graphql_api import graphql_router
+from film.problem_details import ProblemDetails
+from film.repository.session_factory import engine
+from film.router import (
     health_router,
     hello_router,
     patient_router,
     patient_write_router,
     shutdown_router,
 )
-from patient.router.film_router import router as film_router
-from patient.security import (
+from film.router.film_router import router as film_router
+from film.security import (
     AuthorizationError,
     LoginError,
     router as auth_router,
     set_response_headers,
 )
-from patient.service import (
+from film.service import (
     EmailExistsError,
     ForbiddenError,
     NotFoundError,

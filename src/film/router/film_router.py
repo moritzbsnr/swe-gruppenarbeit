@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
-from patient.entity import Drehbuch, Film, Schauspieler
-from patient.repository.session_factory import Session
+from film.entity import Drehbuch, Film, Schauspieler
+from film.repository.session_factory import Session
 
 router = APIRouter(prefix="/filme", tags=["Filme"])
 

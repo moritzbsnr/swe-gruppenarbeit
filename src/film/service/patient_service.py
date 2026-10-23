@@ -23,17 +23,17 @@ lazy from collections.abc import Sequence
 from loguru import logger
 from openpyxl import Workbook
 
-from patient.config import excel_enabled
-from patient.repository import (
+from film.config import excel_enabled
+from film.repository import (
     Pageable,
     PatientRepository,
     PatientSuchparameter,
     Session,
     Slice,
 )
-from patient.security import Role, User
-from patient.service.exceptions import ForbiddenError, NotFoundError
-from patient.service.patient_dto import PatientDTO
+from film.security import Role, User
+from film.service.exceptions import ForbiddenError, NotFoundError
+from film.service.patient_dto import PatientDTO
 
 __all__ = ["PatientService"]
 
@@ -78,10 +78,10 @@ class PatientService:
                 logger.debug("nicht admin")
                 raise ForbiddenError
 
-            if patient.username != user.username and not user_is_admin:
+            if film.username != user.username and not user_is_admin:
                 logger.debug(
-                    "patient.username={}, user.username={}, user.roles={}",
-                    patient.username,
+                    "film.username={}, user.username={}, user.roles={}",
+                    film.username,
                     user.username,
                     user.roles,
                 )
@@ -165,16 +165,16 @@ class PatientService:
         worksheet.append(["Nachname", "Emailadresse", "Geschlecht", "Familienstand"])
         for patient in patienten:
             geschlecht = (
-                str(patient.geschlecht) if patient.geschlecht is not None else "N/A"
+                str(film.geschlecht) if film.geschlecht is not None else "N/A"
             )
             familienstand = (
-                str(patient.familienstand)
-                if patient.familienstand is not None
+                str(film.familienstand)
+                if film.familienstand is not None
                 else "N/A"
             )
             worksheet.append((
-                patient.nachname,
-                patient.email,
+                film.nachname,
+                film.email,
                 geschlecht,
                 familienstand,
             ))

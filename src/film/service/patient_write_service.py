@@ -19,17 +19,17 @@ from typing import Final
 
 from loguru import logger
 
-from patient.repository import PatientRepository, Session
-from patient.security import User, UserService
-from patient.service.exceptions import (
+from film.repository import PatientRepository, Session
+from film.security import User, UserService
+from film.service.exceptions import (
     EmailExistsError,
     EmptyUsernameError,
     NotFoundError,
     UsernameExistsError,
     VersionOutdatedError,
 )
-from patient.service.patient_dto import PatientDTO
-lazy from patient.entity import Patient
+from film.service.patient_dto import PatientDTO
+lazy from film.entity import Patient
 
 __all__ = ["PatientWriteService"]
 
@@ -53,11 +53,11 @@ class PatientWriteService:
         logger.debug(
             "patient={}, adresse={}, rechnungen={}",
             patient,
-            patient.adresse,
-            patient.rechnungen,
+            film.adresse,
+            film.rechnungen,
         )
 
-        username: Final = patient.username
+        username: Final = film.username
         if username is None:
             raise EmptyUsernameError
 
@@ -66,15 +66,15 @@ class PatientWriteService:
         if self.user_service.username_exists(username):
             raise UsernameExistsError(username)
 
-        email: Final = patient.email
+        email: Final = film.email
         if self.user_service.email_exists(email):
             raise EmailExistsError(email=email)
 
         user: Final = User(
             username=username,
-            email=patient.email,
-            nachname=patient.nachname,
-            vorname=patient.nachname,
+            email=film.email,
+            nachname=film.nachname,
+            vorname=film.nachname,
             password="p",  # ruff: ignore[hardcoded-password-func-arg] # NOSONAR
             roles=[],
         )
@@ -121,7 +121,7 @@ class PatientWriteService:
             if patient_db.version > version:
                 raise VersionOutdatedError(version)
 
-            email: Final = patient.email
+            email: Final = film.email
             if email != patient_db.email and self.repo.exists_email_other_id(
                 patient_id=patient_id,
                 email=email,

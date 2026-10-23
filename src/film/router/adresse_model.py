@@ -19,7 +19,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
-from patient.entity import Adresse
+from film.entity import Adresse
 
 __all__ = ["AdresseModel"]
 

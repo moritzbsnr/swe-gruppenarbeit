@@ -37,8 +37,8 @@ from pyfiglet import Figlet
 from starlette.routing import BaseRoute, Route
 from tabulate import tabulate
 
-from patient.config import db_url
-from patient.repository import engine
+from film.config import db_url
+from film.repository import engine
 
 
 # tabulate() hat ein Argument vom Typ "Tuple" und nicht dataclass

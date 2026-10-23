@@ -23,10 +23,10 @@ from keycloak import KeycloakAuthenticationError, KeycloakOpenID, KeycloakOperat
 from loguru import logger
 lazy from fastapi import Request
 
-from patient.config import keycloak_config
-from patient.security.exceptions import AuthorizationError, LoginError
-from patient.security.role import Role
-from patient.security.user import User
+from film.config import keycloak_config
+from film.security.exceptions import AuthorizationError, LoginError
+from film.security.role import Role
+from film.security.user import User
 
 __all__ = ["TokenService"]
 

@@ -20,10 +20,10 @@ from typing import Annotated, Final
 from fastapi import Depends, HTTPException, Request, status
 from loguru import logger
 
-from patient.security.dependencies import get_token_service
-from patient.security.role import Role
-lazy from patient.security.token_service import TokenService
-lazy from patient.security.user import User
+from film.security.dependencies import get_token_service
+from film.security.role import Role
+lazy from film.security.token_service import TokenService
+lazy from film.security.user import User
 
 __all__ = ["RolesRequired"]
 

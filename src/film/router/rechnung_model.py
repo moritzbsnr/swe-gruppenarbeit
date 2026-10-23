@@ -20,7 +20,7 @@ lazy from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from patient.entity import Rechnung
+from film.entity import Rechnung
 
 __all__ = ["RechnungModel"]
 

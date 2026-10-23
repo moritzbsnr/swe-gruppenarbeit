@@ -21,15 +21,15 @@ from fastapi import APIRouter, Depends, Query, Request, Response, status
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from patient.router.constants import ETAG, IF_NONE_MATCH, IF_NONE_MATCH_MIN_LEN
-from patient.router.dependencies import get_service
-from patient.router.patient_find_model import (
+from film.router.constants import ETAG, IF_NONE_MATCH, IF_NONE_MATCH_MIN_LEN
+from film.router.dependencies import get_service
+from film.router.patient_find_model import (
     PatientFindModel,
     PatientPageModel,
     PatientResponseModel,
 )
-from patient.security import Role, RolesRequired, User
-lazy from patient.service import PatientService
+from film.security import Role, RolesRequired, User
+lazy from film.service import PatientService
 
 __all__ = ["patient_router"]
 
@@ -77,7 +77,7 @@ def get_by_id(
         logger.debug("version={}", version)
         if version is not None:
             try:
-                if int(version) == patient.version:
+                if int(version) == film.version:
                     return Response(status_code=status.HTTP_304_NOT_MODIFIED)
             except ValueError:
                 logger.debug("invalid version={}", version)
@@ -85,7 +85,7 @@ def get_by_id(
     patient_model: Final = PatientResponseModel.from_dto(patient)
     return JSONResponse(
         content=patient_model.model_dump(mode="json"),
-        headers={ETAG: f'"{patient.version}"'},
+        headers={ETAG: f'"{film.version}"'},
     )
 
 

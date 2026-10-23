@@ -31,20 +31,20 @@ from strawberry.extensions import PydanticErrorExtension
 from strawberry.fastapi import GraphQLRouter
 lazy from strawberry.types import Info
 
-from patient.config.graphql import graphql_ide
-from patient.entity import Drehbuch, Film, Schauspieler
-from patient.graphql_api.graphql_types import (
+from film.config.graphql import graphql_ide
+from film.entity import Drehbuch, Film, Schauspieler
+from film.graphql_api.graphql_types import (
     CreatePayload,
     FilmInput,
     LoginResult,
     PatientInput,
     Suchparameter,
 )
-from patient.repository import Pageable, PatientRepository, PatientSuchparameter
-from patient.repository.session_factory import Session
-from patient.router.patient_model import PatientModel
-from patient.security import Role, TokenService, UserService
-from patient.service import (
+from film.repository import Pageable, PatientRepository, PatientSuchparameter
+from film.repository.session_factory import Session
+from film.router.patient_model import PatientModel
+from film.security import Role, TokenService, UserService
+from film.service import (
     NotFoundError,
     PatientDTO,
     PatientService,

@@ -22,10 +22,10 @@ from loguru import logger
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from patient.entity import Patient
-from patient.repository.slice import Slice
-lazy from patient.repository.pageable import Pageable
-lazy from patient.repository.patient_suchparameter import PatientSuchparameter
+from film.entity import Patient
+from film.repository.slice import Slice
+lazy from film.repository.pageable import Pageable
+lazy from film.repository.patient_suchparameter import PatientSuchparameter
 
 __all__ = ["PatientRepository"]
 
@@ -229,17 +229,17 @@ class PatientRepository:
         :rtype: Patient
         """
         logger.debug(
-            "patient={}, patient.adresse={}, patient.rechnungen={}",
+            "patient={}, film.adresse={}, film.rechnungen={}",
             patient,
-            patient.adresse,
-            patient.rechnungen,
+            film.adresse,
+            film.rechnungen,
         )
         # https://docs.sqlalchemy.org/en/20/orm/session_basics.html#adding-new-or-existing-items
         session.add(instance=patient)
         # flush(), damit die ID aus der Sequence vor COMMIT fuer Logging verfuegbar ist
         # https://docs.sqlalchemy.org/en/20/tutorial/orm_data_manipulation.html#flushing
         session.flush(objects=[patient])
-        logger.debug("patient_id={}", patient.id)
+        logger.debug("patient_id={}", film.id)
         return patient
 
     def update(self, patient: Patient, session: Session) -> Patient | None:
@@ -254,7 +254,7 @@ class PatientRepository:
         logger.debug("{}", patient)
 
         if (
-            patient_db := self.find_by_id(patient_id=patient.id, session=session)
+            patient_db := self.find_by_id(patient_id=film.id, session=session)
         ) is None:
             # Patientendaten wurden i.a. zuvor in der Session aktualisiert
             return None

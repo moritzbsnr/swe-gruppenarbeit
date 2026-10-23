@@ -26,9 +26,9 @@ Desweiteren wird für _uvicorn_ die 'Package-Level' Variable `app` initialisiert
 Dann lautet der Aufruf:
 
 ```powershell
-uv run uvicorn src.patient:app `
-    --ssl-certfile=src\patient\config\resources\tls\certificate.crt `
-    --ssl-keyfile=src\patient\config\resources\tls\key.pem
+uv run uvicorn src.film:app `
+    --ssl-certfile=src\film\config\resources\tls\certificate.crt `
+    --ssl-keyfile=src\film\config\resources\tls\key.pem
 ```
 
 Alternativ kann auch die virtuelle Umgebung für _venv_ aktiviert werden und uvicorn
@@ -36,9 +36,9 @@ direkt aufgerufen werden:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
-uvicorn src.patient:app `
-    --ssl-certfile=src\patient\config\resources\tls\certificate.crt `
-    --ssl-keyfile=src\patient\config\resources\tls\key.pem
+uvicorn src.film:app `
+    --ssl-certfile=src\film\config\resources\tls\certificate.crt `
+    --ssl-keyfile=src\film\config\resources\tls\key.pem
 ```
 
 Eine weitere Alternative ist das CLI von FastAPI, das intern _uvicorn_ mit Port _8000_
@@ -46,12 +46,12 @@ aufruft - aber _ohne TLS_. Mit dem CLI von FastAPI hat man beim Entwickeln u.a. 
 Vorteil, dass ein _Watch-Modus_ im Hinblick auf Dateiänderungen untersützt wird:
 
 ```powershell
-uv run fastapi dev src\patient
+uv run fastapi dev src\film
 ```
 """
 
-from patient.asgi_server import run
-from patient.fastapi_app import app
+from film.asgi_server import run
+from film.fastapi_app import app
 
 __all__ = ["app", "main"]
 
