@@ -23,11 +23,11 @@ from fastapi import Depends
 from keycloak import KeycloakConnectionError
 from loguru import logger
 
-from patient.config import csv_config
-from patient.config.dev_modus import dev_keycloak_populate
-from patient.security import User, UserService
-from patient.security.dependencies import get_user_service
-from patient.security.role import Role
+from film.config import csv_config
+from film.config.dev_modus import dev_keycloak_populate
+from film.security import User, UserService
+from film.security.dependencies import get_user_service
+from film.security.role import Role
 
 __all__ = [
     "KeycloakPopulateService",
@@ -91,7 +91,7 @@ class KeycloakPopulateService:
                     password="p",  # ruff: ignore[hardcoded-password-func-arg] # NOSONAR
                 )
                 self.user_service.create_user(user=user)
-        logger.debug("Alle User zu 'patient.csv' neu angelegt")
+        logger.debug("Alle User zu 'film.csv' neu angelegt")
 
 
 def get_keycloak_populate_service(

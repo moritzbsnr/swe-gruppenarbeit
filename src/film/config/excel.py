@@ -13,24 +13,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Enum für Geschlecht."""
+"""Konfiguration für Excel."""
 
-from enum import StrEnum
+from typing import Final
 
-import strawberry
+from film.config.config import app_config
+
+__all__ = ["excel_enabled"]
 
 
-# StrEnum ab Python 3.11 (2022), abgeleitet von str
-# zusaetzlich als enum fuer das GraphQL-Schema
-@strawberry.enum
-class Geschlecht(StrEnum):
-    """Enum für Geschlecht."""
+_excel_toml: Final = app_config.get("excel", {})
 
-    MAENNLICH = "M"
-    """Männlich."""
-
-    WEIBLICH = "W"
-    """Weiblich."""
-
-    DIVERS = "D"
-    """Divers."""
+excel_enabled: Final[bool] = bool(_excel_toml.get("enabled", False))
+"""Flag, ob Excel benutzt werden soll (default: False)."""

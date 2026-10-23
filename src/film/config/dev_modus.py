@@ -13,26 +13,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Enum für Familienstand."""
+"""Konfiguration für den Entwicklungsmodus."""
 
-from enum import StrEnum
+from typing import Final
 
-import strawberry
+from film.config.config import app_config
+
+__all__ = ["dev_db_populate", "dev_keycloak_populate"]
 
 
-# StrEnum ab Python 3.11 (2022), abgeleitet von str
-@strawberry.enum
-class Familienstand(StrEnum):
-    """Enum für Familienstand."""
+_dev_toml: Final = app_config.get("dev", {})
 
-    LEDIG = "L"
-    "Ledig."
+dev_db_populate: Final[bool] = bool(_dev_toml.get("db-populate", False))
+"""Flag, ob die DB beim Serverstart neu geladen werden soll."""
 
-    VERHEIRATET = "VH"
-    """Verheiratet."""
-
-    GESCHIEDEN = "G"
-    """Geschieden."""
-
-    VERWITWET = "VW"
-    """Verwitwet."""
+dev_keycloak_populate: Final[bool] = bool(_dev_toml.get("keycloak-populate", False))
+"""Flag, ob Keycloak beim Serverstart neu geladen werden soll."""

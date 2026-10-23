@@ -22,7 +22,7 @@ lazy from importlib.resources.abc import Traversable
 from loguru import logger
 from sqlalchemy.engine import URL
 
-from patient.config.config import app_config, resources_path
+from film.config.config import app_config, resources_path
 
 __all__ = [
     "db_connect_args",
@@ -39,9 +39,9 @@ db_dialect: Final = _db_toml.get("dialect", "postgresql")
 logger.debug("db: db_dialect={}", db_dialect)
 
 _drivername = "postgresql+psycopg"
-_dbname: Final[str] = _db_toml.get("name", "patient")
+_dbname: Final[str] = _db_toml.get("name", "film")
 _host: Final[str] = _db_toml.get("host", "postgres")
-_username: Final[str] = _db_toml.get("username", "patient")
+_username: Final[str] = _db_toml.get("username", "film")
 _password: Final[str] = _db_toml.get("password", "p")
 _password_admin: Final[str] = _db_toml.get("password-admin", "p")
 

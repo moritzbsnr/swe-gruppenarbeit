@@ -1,6 +1,6 @@
 """Modul zur Konfiguration."""
 
-from patient.config.db import (
+from film.config.db import (
     db_connect_args,
     db_dialect,
     db_log_statements,

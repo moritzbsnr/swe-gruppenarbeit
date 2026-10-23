@@ -117,4 +117,4 @@ EXPOSE 8000
 
 STOPSIGNAL SIGINT
 
-ENTRYPOINT ["python", "-m", "patient"]
+ENTRYPOINT ["python", "-m", "film"]

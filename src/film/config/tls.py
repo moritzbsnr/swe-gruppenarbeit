@@ -13,19 +13,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Konfiguration für den Entwicklungsmodus."""
+"""Konfiguration für den privaten Schlüssel und das Zertifikat für TLS."""
 
+from importlib.resources import files
 from typing import Final
+lazy from importlib.resources.abc import Traversable
 
-from patient.config.config import app_config
+from loguru import logger
 
-__all__ = ["dev_db_populate", "dev_keycloak_populate"]
+from film.config.config import app_config, resources_path
+
+__all__ = ["tls_certfile", "tls_keyfile"]
 
 
-_dev_toml: Final = app_config.get("dev", {})
+_tls_toml: Final = app_config.get("tls", {})
+_tls_path: Final[Traversable] = files(resources_path) / "tls"
 
-dev_db_populate: Final[bool] = bool(_dev_toml.get("db-populate", False))
-"""Flag, ob die DB beim Serverstart neu geladen werden soll."""
+_key: Final[str] = _tls_toml.get("key", "key.pem")
+tls_keyfile: Final[str] = str(_tls_path / _key)
+logger.debug("private keyfile TLS: {}", tls_keyfile)
 
-dev_keycloak_populate: Final[bool] = bool(_dev_toml.get("keycloak-populate", False))
-"""Flag, ob Keycloak beim Serverstart neu geladen werden soll."""
+_certificate: Final[str] = _tls_toml.get("certificate", "certificate.crt")
+tls_certfile: Final[str] = str(_tls_path / _certificate)
+logger.debug("certfile TLS: {}", tls_certfile)

@@ -19,7 +19,7 @@ from typing import Final
 
 lazy from strawberry.http.ides import GraphQL_IDE
 
-from patient.config.config import app_config
+from film.config.config import app_config
 
 __all__ = ["graphql_ide"]
 

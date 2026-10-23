@@ -13,26 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Enum für Fachärzte."""
+"""Konfiguration für ASGI."""
 
-from enum import StrEnum
+from os import environ
+from typing import Final
 
-import strawberry
+from film.config.config import app_config
+
+__all__ = ["host_binding", "port", "profiling", "reload"]
 
 
-# StrEnum ab Python 3.11  (2022), abgeleitet von str
-@strawberry.enum
-class Facharzt(StrEnum):
-    """Enum für 30+ Fachrichtungen."""
+_server_toml: Final = app_config.get("server", {})
 
-    CHIRURGIE = "C"
-    """Facharzt für Chirurgie."""
+host_binding: Final[str] = _server_toml.get("host-binding", "127.0.0.1")
+"""'Host Binding', z.B. 127.0.0.1 (default) oder 0.0.0.0."""
 
-    HALS_NASEN_OHREN = "HNO"
-    """Facharzt für Hals-Nasen-Ohren."""
+port: Final[int] = _server_toml.get("port", 8000)
+"""Port für den Server (default: 8000)."""
 
-    KARDIOLOGIE = "K"
-    """Facharzt für Kardiologie."""
+reload: Final[bool] = bool(_server_toml.get("reload", False))
 
-    NEUROLOGIE = "N"
-    """Facharzt für Neurologie."""
+try:
+    profiling = bool(environ["PROFILING"])
+except KeyError:
+    profiling = False

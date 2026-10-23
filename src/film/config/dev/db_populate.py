@@ -25,15 +25,15 @@ lazy from importlib.resources.abc import Traversable
 from loguru import logger
 from sqlalchemy import Connection, create_engine, text
 
-from patient.config.config import resources_path
-from patient.config.db import (
+from film.config.config import resources_path
+from film.config.db import (
     db_connect_args,
     db_dialect,
     db_log_statements,
     db_url_admin,
 )
-from patient.config.dev_modus import dev_db_populate
-from patient.repository import engine
+from film.config.dev_modus import dev_db_populate
+from film.repository import engine
 
 __all__ = ["DbPopulateService", "db_populate", "get_db_populate_service"]
 
@@ -114,14 +114,11 @@ class DbPopulateService:
             "film",
             "schauspieler",
             "drehbuch",
-            "patient",
-            "adresse",
-            "rechnung",
         ]
-        csv_path: Final = "/init/patient/csv"
+        csv_path: Final = "/init/film/csv"
         # siehe extras/compose/postgres/compose.init.yml
         with self.engine_admin.connect() as connection:
-            connection.execute(text("SET search_path TO patient;"))
+            connection.execute(text("SET search_path TO film;"))
             for tabelle in tabellen:
                 self._load_csv_file(
                     tabelle=tabelle,

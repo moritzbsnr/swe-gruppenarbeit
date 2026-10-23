@@ -21,7 +21,7 @@ from typing import Final
 
 from loguru import logger
 
-from patient.config.config import app_config
+from film.config.config import app_config
 
 __all__ = ["mail_config", "receiver", "sender"]
 
