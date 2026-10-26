@@ -15,13 +15,15 @@
 
 """Exceptions in der Geschäftslogik."""
 
-lazy from film.repository.patient_suchparameter import PatientSuchparameter
+lazy from film.repository.film_suchparameter import FilmSuchparameter
 
 __all__ = [
     "AdresseRequiredError",
+    "DrehbuchRequiredError",
     "EmailExistsError",
     "ForbiddenError",
     "NotFoundError",
+    "SchauspielerNotInFilmError",
     "UsernameExistsError",
     "VersionOutdatedError",
 ]
@@ -64,20 +66,20 @@ class ForbiddenError(Exception):
 
 
 class NotFoundError(Exception):
-    """Exception, falls kein Patient gefunden wurde."""
+    """Exception, falls kein Film gefunden wurde."""
 
     def __init__(
         self,
-        patient_id: int | None = None,
-        suchparameter: PatientSuchparameter | None = None,
+        film_id: int | None = None,
+        suchparameter: FilmSuchparameter | None = None,
     ) -> None:
-        """Initialisierung von NotFoundError mit ID und Suchparameter.
+        """Initialisierung mit Film-ID oder Suchparametern.
 
-        :param patient_id: Patient-ID, zu der nichts gefunden wurde
+        :param film_id: Film-ID, zu der nichts gefunden wurde
         :param suchparameter: Suchparameter, zu denen nichts gefunden wurde
         """
         super().__init__("Not Found")
-        self.patient_id = patient_id
+        self.film_id = film_id
         self.suchparameter = suchparameter
 
 
@@ -99,3 +101,22 @@ class AdresseRequiredError(RuntimeError):
     def __init__(self) -> None:
         """Initialisierung von AdresseRequiredError."""
         super().__init__("Ungueltiger Zustand: Adresse ist None")
+
+
+class DrehbuchRequiredError(RuntimeError):
+    """Exception, falls ein Film ohne Drehbuch verarbeitet wird."""
+
+    def __init__(self) -> None:
+        """Initialisiert den Fehler für fehlende Drehbücher."""
+        super().__init__("Ein Film muss genau ein Drehbuch besitzen")
+
+
+class SchauspielerNotInFilmError(ValueError):
+    """Exception, falls ein Schauspieler nicht zum aktualisierten Film gehört."""
+
+    def __init__(self, schauspieler_id: int) -> None:
+        """Initialisiert den Fehler mit der fremden Schauspieler-ID."""
+        super().__init__(
+            f"Schauspieler mit ID {schauspieler_id} gehört nicht zu diesem Film",
+        )
+        self.schauspieler_id = schauspieler_id

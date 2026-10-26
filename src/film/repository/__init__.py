@@ -1,13 +1,13 @@
 """Modul für den DB-Zugriff."""
 
+from film.repository.film_repository import FilmRepository
+from film.repository.film_suchparameter import FilmSuchparameter
 from film.repository.pageable import (
     DEFAULT_PAGE_NUMBER,
     DEFAULT_PAGE_SIZE,
     MAX_PAGE_SIZE,
     Pageable,
 )
-from film.repository.patient_repository import PatientRepository
-from film.repository.patient_suchparameter import PatientSuchparameter
 from film.repository.session_factory import Session, engine
 from film.repository.slice import Slice
 
@@ -16,9 +16,9 @@ __all__ = [
     "DEFAULT_PAGE_NUMBER",
     "DEFAULT_PAGE_SIZE",
     "MAX_PAGE_SIZE",
+    "FilmRepository",
+    "FilmSuchparameter",
     "Pageable",
-    "PatientRepository",
-    "PatientSuchparameter",
     "Session",
     "Slice",
     "engine",
