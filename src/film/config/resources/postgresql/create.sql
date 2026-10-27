@@ -19,7 +19,7 @@
 -- ggf. CHECK(char_length(nachname) <= 255)
 
 -- https://www.postgresql.org/docs/current/manage-ag-tablespaces.html
-SET default_tablespace = patientspace;
+SET default_tablespace = filmspace;
 
 -- https://www.postgresql.org/docs/current/sql-createtable.html
 -- https://www.postgresql.org/docs/current/datatype.html

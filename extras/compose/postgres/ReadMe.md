@@ -80,18 +80,18 @@ Berechtigung zum Ändern vom Linux-Owner und von der Linux-Group (s.u.).
 ```
 
 Um die SQL-Skripte sowie Zertifikat und privater Schlüssel für TLS aus dem
-Original-Verzeichnis `init\patient\sql` bzw. `init\patient\tls` in das Named Volume
+Original-Verzeichnis `init\film\sql` bzw. `init\tls` in das Named Volume
 `pg_init` kopieren zu können, wurde das lokale Verzeichnis `.\init` in `/tmp/init`
 bereitgestellt. In der _bash_ werden deshalb die SQL-Skripte sowie Zertifikat und
 privater Schlüssel aus dem Verzeichnis `/tmp/init` nach `/init` und deshalb in
-das Named Volume `pg_init` kopiert. Danach wird das Verzeichnis `/tablespace/patient`
+das Named Volume `pg_init` kopiert. Danach wird das Verzeichnis `/tablespace/film`
 angelegt, welches im Named Volume `pg_tablespace` liegt. Jetzt wird bei den Dateien
 der Owner und die Gruppe auf `postgres` gesetzt sowie die Zugriffsrechte auf Oktal
 `400`, d.h. nur der Owner hat Leserechte.
 
 ```shell
     cp -r /tmp/init/* /init
-    mkdir /tablespace/patient
+    mkdir /tablespace/film
     chown -R postgres:postgres /init /tablespace
     chmod 400 /init/*/sql/* /init/*/csv/* /init/tls/*
     ls -lR /init
@@ -152,13 +152,13 @@ wieder entfernt werden.
 ```
 
 In der 2. Shell werden die beiden SQL-Skripte ausgeführt, um zunächst eine neue
-DB `patient` mit dem DB-User `patient`anzulegen. Mit dem 2. Skript wird das
-Schema `patient` mit dem DB-User `patient` als _Owner_ angelegt:
+DB `film` mit dem DB-User `film` anzulegen. Mit dem 2. Skript wird das
+Schema `film` mit dem DB-User `film` als _Owner_ angelegt:
 
 ```shell
     docker compose exec postgres bash
-        psql --dbname=postgres --username=postgres --file=/init/patient/sql/create-db.sql
-        psql --dbname=patient --username=patient --file=/init/patient/sql/create-schema.sql
+        psql --dbname=postgres --username=postgres --file=/init/film/sql/create-db.sql
+        psql --dbname=film --username=film --file=/init/film/sql/create-schema.sql
         exit
     docker compose down
 ```
@@ -251,7 +251,7 @@ Die Ausgabe vom Kommando `openssl` zeigt u.a. folgendes an:
 
 ### Konfiguration
 
-Mit der Erweiterung _PostgreSQL_ für VS Code kann man die Datenbank `patient` und
+Mit der Erweiterung _PostgreSQL_ für VS Code kann man die Datenbank `film` und
 deren Daten verwalten. Man klickt man auf _+ Verbindung hinzufügen_
 und gibt beim Karteireiter _Parameter_ folgende Werte ein:
 
@@ -273,9 +273,9 @@ gibt folgende Werte ein:
 Jetzt den modalen Dialog schließen, d.h. rechts oben auf _X_ klicken, und danach
 den Button _Verbindung testen_ anklicken. Wenn dann im Button ein Haken erscheint,
 kann man den anderen Button _Save & Connect_ anklicken, um die Verbindung zu speichern.
-Im Untermenü _Databases_ von der Verbindung sieht man dann z.B. die Datenbank `patient`
-mit dem gleichnamigen Schema `patient` und die Datenbank `postgres`.
-Ebenso kann man man unter _Roles_ den DB-User `patient` und den Superuser `postgres`
+Im Untermenü _Databases_ von der Verbindung sieht man dann z.B. die Datenbank `film`
+mit dem gleichnamigen Schema `film` und die Datenbank `postgres`.
+Ebenso kann man man unter _Roles_ den DB-User `film` und den Superuser `postgres`
 sehen sowie bei _Tablespaces_ den Default-Tablespace `pg_default` und den
 eigenen Tablespace.
 
