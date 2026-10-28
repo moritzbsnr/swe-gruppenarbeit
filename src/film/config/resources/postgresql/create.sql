@@ -32,24 +32,22 @@ CREATE TYPE facharzt AS ENUM ('CHIRURGIE', 'HALS_NASEN_OHREN', 'KARDIOLOGIE', 'N
 CREATE TABLE IF NOT EXISTS film (
     id                 INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1000) PRIMARY KEY,
     titel              TEXT NOT NULL,
-    erscheinungsjahr   DATE NOT NULL,
-    genre              TEXT NOT NULL
+    erscheinungsjahr   DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS schauspieler (
     id             INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1000) PRIMARY KEY,
     vorname        TEXT NOT NULL,
     nachname       TEXT NOT NULL,
-    geburtsdatum   DATE NOT NULL,
     film_id        INTEGER NOT NULL REFERENCES film ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS drehbuch (
-    id       INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1000) PRIMARY KEY,
-    titel    TEXT NOT NULL,
-    autor    TEXT NOT NULL,
-    inhalt   TEXT NOT NULL,
-    film_id  INTEGER NOT NULL UNIQUE REFERENCES film ON DELETE CASCADE
+    id          INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1000) PRIMARY KEY,
+    titel       TEXT NOT NULL,
+    autor       TEXT NOT NULL,
+    seitenzahl  INTEGER NOT NULL CHECK (seitenzahl > 0),
+    film_id     INTEGER NOT NULL UNIQUE REFERENCES film ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS patient (

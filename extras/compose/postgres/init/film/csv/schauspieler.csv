@@ -1,4 +1,4 @@
-id;vorname;nachname;geburtsdatum;film_id
-1000;Mara;Beispiel;1990-04-12;1000
-1001;Jonas;Muster;1985-09-23;1000
-1002;Lea;Demo;1994-01-08;1001
+id;vorname;nachname;film_id
+1000;Son;Yejin;1000
+1001;Lee;Byung-Hun;1000
+1002;Choi;Min-Sik;1001

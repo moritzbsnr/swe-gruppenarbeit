@@ -41,7 +41,7 @@ def run() -> None:
     #      "zttp" fuer HTTP/1.1 und HTTP/2, "zttp1" fuer HTTP/1.1, "zttp2" fuer HTTP/2
     # interface="auto" (default), "asgi2", "asgi3", "wsgi"
     uvicorn.run(
-        "patient:app",
+        "film:app",
         loop="asyncio",
         http="zttp",
         http2=True,  # NOSONAR

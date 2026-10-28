@@ -15,7 +15,7 @@
 
 """Neuladen von Keycloak im Modus DEV."""
 
-from csv import reader
+from csv import DictReader
 from pathlib import Path
 from typing import Annotated
 
@@ -34,6 +34,10 @@ __all__ = [
     "get_keycloak_populate_service",
     "keycloak_populate",
 ]
+
+
+class InvalidUserCsvError(ValueError):
+    """Die konfigurierte CSV-Datei enthält keine gültigen Keycloak-Benutzer."""
 
 
 class KeycloakPopulateService:
@@ -69,19 +73,30 @@ class KeycloakPopulateService:
         logger.debug("CSV-Datei: {}", csv_config_path)
 
         with csv_config_path.open() as csv_file:
-            csv_reader = reader(csv_file, delimiter=";")
-            kopfzeile = True
-            for row in csv_reader:
-                if kopfzeile:
-                    kopfzeile = False
-                    continue
+            csv_reader = DictReader(csv_file, delimiter=";")
+            required_fields = {"email", "nachname", "username"}
+            missing_fields = required_fields - set(csv_reader.fieldnames or [])
+            if missing_fields:
+                logger.error(
+                    f"CSV-Datei {csv_config_path} fehlen Spalten: "
+                    f"{', '.join(sorted(missing_fields))}"
+                )
+                raise InvalidUserCsvError
 
-                username = row[11]
+            for row_number, row in enumerate(csv_reader, start=2):
+                username = row.get("username")
                 if username == "admin":
                     continue
 
-                email = row[3]
-                nachname = row[2]
+                email = row.get("email")
+                nachname = row.get("nachname")
+                if not username or not email or not nachname:
+                    logger.error(
+                        f"CSV-Datei {csv_config_path}, Zeile {row_number}: "
+                        "username, email und nachname müssen ausgefüllt sein"
+                    )
+                    raise InvalidUserCsvError
+
                 user = User(
                     username=username,
                     email=email,
@@ -91,7 +106,7 @@ class KeycloakPopulateService:
                     password="p",  # ruff: ignore[hardcoded-password-func-arg] # NOSONAR
                 )
                 self.user_service.create_user(user=user)
-        logger.debug("Alle User zu 'film.csv' neu angelegt")
+        logger.debug("Alle User aus '{}' neu angelegt", csv_config_path)
 
 
 def get_keycloak_populate_service(
