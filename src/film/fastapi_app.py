@@ -46,10 +46,9 @@ from film.graphql_api import graphql_router
 from film.problem_details import ProblemDetails
 from film.repository.session_factory import engine
 from film.router import (
+    film_write_router,
     health_router,
     hello_router,
-    patient_router,
-    patient_write_router,
     shutdown_router,
 )
 from film.router.film_router import router as film_router
@@ -155,9 +154,8 @@ async def log_response_time(
 # --------------------------------------------------------------------------------------
 # R E S T
 # --------------------------------------------------------------------------------------
-app.include_router(patient_router, prefix="/rest")
-app.include_router(patient_write_router, prefix="/rest")
 app.include_router(film_router, prefix="/rest")
+app.include_router(film_write_router, prefix="/rest")
 app.include_router(auth_router, prefix="/auth")
 app.include_router(health_router, prefix="/health")
 app.include_router(shutdown_router, prefix="/admin")

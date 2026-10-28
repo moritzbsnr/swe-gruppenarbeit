@@ -32,7 +32,7 @@ CREATE TYPE facharzt AS ENUM ('CHIRURGIE', 'HALS_NASEN_OHREN', 'KARDIOLOGIE', 'N
 CREATE TABLE IF NOT EXISTS film (
     id                 INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1000) PRIMARY KEY,
     titel              TEXT NOT NULL,
-    erscheinungsjahr   INTEGER NOT NULL CHECK (erscheinungsjahr > 1888),
+    erscheinungsjahr   DATE NOT NULL,
     genre              TEXT NOT NULL
 );
 

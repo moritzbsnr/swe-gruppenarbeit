@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""PatientWriteRouter."""
+"""FilmWriteRouter."""
 
 from typing import Annotated, Final
 
@@ -25,26 +25,26 @@ from film.router.constants import IF_MATCH, IF_MATCH_MIN_LEN
 from film.router.dependencies import get_write_service
 from film.security import Role, RolesRequired
 from film.service import send_mail
-lazy from film.router.patient_model import PatientModel
-lazy from film.router.patient_update_model import PatientUpdateModel
-lazy from film.service import PatientWriteService
+lazy from film.router.film_model import FilmModel
+lazy from film.router.film_update_model import FilmUpdateModel
+lazy from film.service import FilmWriteService
 
-__all__ = ["patient_write_router"]
-
-
-patient_write_router: Final = APIRouter(tags=["Schreiben"])
+__all__ = ["film_write_router"]
 
 
-@patient_write_router.post("")
+film_write_router: Final = APIRouter(tags=["Schreiben"])
+
+
+@film_write_router.post("")
 def post(
-    patient_model: PatientModel,
+    film_model: FilmModel,
     request: Request,
     background_tasks: BackgroundTasks,
-    service: Annotated[PatientWriteService, Depends(get_write_service)],
+    service: Annotated[FilmWriteService, Depends(get_write_service)],
 ) -> Response:
-    """POST-Request, um einen neuen Patienten anzulegen.
+    """POST-Request, um einen neuen Film anzulegen.
 
-    :param patient_model: Patientendaten als Pydantic-Model
+    :param film_model: Filmendaten als Pydantic-Model
     :param request: Injiziertes Request-Objekt von FastAPI bzw. Starlette
         mit der Request-URL
     :param background_tasks: Hintergrundtask für den Mailversand
@@ -54,34 +54,34 @@ def post(
     :raises EmailExistsError: Falls die Emailadresse bereits existiert
     :raises UsernameExistsError: Falls der Benutzername bereits existiert
     """
-    logger.debug("patient_model={}", patient_model)
-    patient_dto: Final = service.create(
-        patient=patient_model.to_patient(),
+    logger.debug("film_model={}", film_model)
+    film_dto: Final = service.create(
+        film=film_model.to_film(),
     )
-    logger.debug("patient_dto={}", patient_dto)
+    logger.debug("film_dto={}", film_dto)
 
-    background_tasks.add_task(send_mail, patient_dto)
+    background_tasks.add_task(send_mail, film_dto)
 
     return Response(
         status_code=status.HTTP_201_CREATED,
-        headers={"Location": f"{request.url}/{patient_dto.id}"},
+        headers={"Location": f"{request.url}/{film_dto.id}"},
         background=background_tasks,
     )
 
 
-@patient_write_router.put(
-    "/{patient_id}",
+@film_write_router.put(
+    "/{film_id}",
     dependencies=[Depends(RolesRequired([Role.ADMIN, Role.PATIENT]))],
 )
 def put(
-    patient_id: int,
-    patient_update_model: PatientUpdateModel,
+    film_id: int,
+    film_update_model: FilmUpdateModel,
     request: Request,
-    service: Annotated[PatientWriteService, Depends(get_write_service)],
+    service: Annotated[FilmWriteService, Depends(get_write_service)],
 ) -> Response:
-    """PUT-Request, um einen Patienten zu aktualisieren.
+    """PUT-Request, um einen Film zu aktualisieren.
 
-    :param patient_id: ID des zu aktualisierenden Patienten als Pfadparameter
+    :param film_id: ID des zu aktualisierenden Films als Pfadparameter
     :param request: Injiziertes Request-Objekt von FastAPI bzw. Starlette
         mit If-Match im Header
     :param service: Injizierter Service für Geschäftslogik
@@ -94,10 +94,10 @@ def put(
     """
     if_match_value: Final = request.headers.get(IF_MATCH)
     logger.debug(
-        "patient_id={}, if_match={}, patient_update_model={}",
-        patient_id,
+        "film_id={}, if_match={}, film_update_model={}",
+        film_id,
         if_match_value,
-        patient_update_model,
+        film_update_model,
     )
 
     if if_match_value is None:
@@ -114,43 +114,34 @@ def put(
             status_code=status.HTTP_412_PRECONDITION_FAILED,
         ).to_response()
 
-    version: Final = if_match_value[1:-1]
-    try:
-        version_int: Final = int(version)
-    except ValueError:
-        return Response(
-            status_code=status.HTTP_412_PRECONDITION_FAILED,
-        )
-
-    patient: Final = patient_update_model.to_patient()
-    patient_modified: Final = service.update(
-        patient=patient,
-        patient_id=patient_id,
-        version=version_int,
+    film_modified: Final = service.update(
+        film_id=film_id,
+        titel=film_update_model.titel,
+        erscheinungsjahr=film_update_model.erscheinungsjahr,
     )
-    logger.debug("patient_modified={}", patient_modified)
+    logger.debug("film_modified={}", film_modified)
 
     return Response(
         status_code=status.HTTP_204_NO_CONTENT,
-        headers={"ETag": f'"{patient_modified.version}"'},
+        headers={"ETag": f'"{film_modified}"'},
     )
 
 
-@patient_write_router.delete(
-    "/{patient_id}",
+@film_write_router.delete(
+    "/{film_id}",
     dependencies=[Depends(RolesRequired([Role.ADMIN, Role.PATIENT]))],
 )
 def delete_by_id(
-    patient_id: int,
-    service: Annotated[PatientWriteService, Depends(get_write_service)],
+    film_id: int,
+    service: Annotated[FilmWriteService, Depends(get_write_service)],
 ) -> Response:
-    """DELETE-Request, um einen Patienten anhand seiner ID zu löschen.
+    """DELETE-Request, um einen Film anhand seiner ID zu löschen.
 
-    :param patient_id: ID des zu löschenden Patienten
+    :param film_id: ID des zu löschenden Films
     :param service: Injizierter Service für Geschäftslogik
     :return: Response mit Statuscode 204
     :rtype: Response
     """
-    logger.debug("patient_id={}", patient_id)
-    service.delete_by_id(patient_id=patient_id)
+    logger.debug("film_id={}", film_id)
+    service.delete_by_id(film_id=film_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

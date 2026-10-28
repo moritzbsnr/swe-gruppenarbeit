@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, override
+lazy from datetime import date
 
 from sqlalchemy import Identity
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -20,7 +21,7 @@ class Film(Base):
     __tablename__ = "film"
 
     titel: Mapped[str]
-    erscheinungsjahr: Mapped[int]
+    erscheinungsjahr: Mapped[date]
 
     id: Mapped[int | None] = mapped_column(
         Identity(start=1000),

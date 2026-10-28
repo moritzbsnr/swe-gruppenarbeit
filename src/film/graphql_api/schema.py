@@ -18,15 +18,12 @@
 Alternative: https://github.com/graphql-python/graphene.
 """
 
-from dataclasses import asdict
-from datetime import date
 from typing import Final
-lazy from collections.abc import Sequence
+lazy from datetime import date
 
 import strawberry
 from fastapi import Request
 from loguru import logger
-from sqlalchemy import select
 from strawberry.extensions import PydanticErrorExtension
 from strawberry.fastapi import GraphQLRouter
 lazy from strawberry.types import Info
@@ -37,44 +34,25 @@ from film.graphql_api.graphql_types import (
     CreatePayload,
     FilmInput,
     LoginResult,
-    PatientInput,
-    Suchparameter,
 )
-from film.repository import Pageable, PatientRepository, PatientSuchparameter
-from film.repository.session_factory import Session
-from film.router.patient_model import PatientModel
-from film.security import Role, TokenService, UserService
+from film.repository import FilmRepository, Pageable, Session
+from film.security import TokenService
 from film.service import (
+    FilmService,
+    FilmWriteService,
     NotFoundError,
-    PatientDTO,
-    PatientService,
-    PatientWriteService,
 )
 
-__all__ = ["graphql_router"]
+__all__ = ["Mutation", "Query", "graphql_router"]
 
 
 # Strawberry ist eine "code-first library":
 # - keine Schema-Datei in SDL (schema definition language) notwendig
 # - das Schema wird aus Klassen generiert, die mit z.B. @type oder @input dekoriert sind
 
-# type Patient {
-#     nachname: String!
-# }
-# input Suchparameter {...}
-# type Query {
-#     patient(patient_id: ID!): Patient!
-#     patienten(suchparameter: Suchparameter): list[Patient!]!
-# }
-
-
-_repo: Final = PatientRepository()
-_service: PatientService = PatientService(repo=_repo)
-_user_service: UserService = UserService()
-_write_service: PatientWriteService = PatientWriteService(
-    repo=_repo,
-    user_service=_user_service,
-)
+_repo: Final = FilmRepository()
+_service: FilmService = FilmService(repo=_repo)
+_write_service: FilmWriteService = FilmWriteService(repo=_repo)
 _token_service: Final = TokenService()
 
 
@@ -83,7 +61,6 @@ class SchauspielerGraphQL:
     id: int
     vorname: str
     nachname: str
-    geburtsdatum: date
 
 
 @strawberry.type
@@ -91,107 +68,79 @@ class DrehbuchGraphQL:
     id: int
     titel: str
     autor: str
-    inhalt: str
+    seitenzahl: int
 
 
 @strawberry.type
 class FilmGraphQL:
     id: int
     titel: str
-    erscheinungsjahr: int
-    genre: str
+    erscheinungsjahr: date
     schauspieler: list[SchauspielerGraphQL]
     drehbuch: DrehbuchGraphQL
 
 
 @strawberry.type  # vgl. @dataclass
 class Query:
-    """Queries, um Patientendaten zu lesen."""
+    """Queries, um Filmendaten zu lesen."""
 
     @strawberry.field
-    def patient(self, patient_id: strawberry.ID, info: Info) -> PatientDTO | None:
-        """Daten zu einem Patienten lesen.
+    def film(self, film_id: strawberry.ID, info: Info) -> FilmGraphQL | None:
+        """Daten zu einem Film lesen.
 
-        :param patient_id: ID des gesuchten Patienten
-        :return: Gesuchter Patient
-        :rtype: Patient
-        :raises NotFoundError: Falls kein Patient gefunden wurde, wird zu GraphQLError
+        :param film_id: ID des gesuchten Films
+        :return: Gesuchter Film
+        :rtype: FilmGraphQL
+        :raises NotFoundError: Falls kein Film gefunden wurde
         """
-        logger.debug("patient_id={}", patient_id)
+        logger.debug("film_id={}", film_id)
 
-        request: Final[Request] = info.context.get("request")
+        request: Final[Request] = info.context["request"]
         user: Final = _token_service.get_user_from_request(request=request)
         if user is None:
             return None
 
         try:
-            patient_dto: Final = _service.find_by_id(
-                patient_id=int(patient_id),
-                user=user,
-            )
+            film_dto: Final = _service.find_by_id(film_id=int(film_id))
         except NotFoundError:
             return None
-        logger.debug("{}", patient_dto)
-        return patient_dto
-
-    @strawberry.field
-    def patienten(
-        self,
-        suchparameter: Suchparameter | None,
-        info: Info,
-    ) -> Sequence[PatientDTO]:
-        """Patienten anhand von Suchparameter suchen.
-
-        :param suchparameter: nachname, email usw.
-        :return: Die gefundenen Patienten
-        :rtype: list[Patient]
-        :raises NotFoundError: Falls kein Patient gefunden wurde, wird zu GraphQLError
-        """
-        logger.debug("suchparameter={}", suchparameter)
-
-        request: Final[Request] = info.context["request"]
-        user: Final = _token_service.get_user_from_request(request)
-        if user is None or Role.ADMIN not in user.roles:
-            return []
-
-        suchparameter_filtered = (
-            None
-            if suchparameter is None
-            else PatientSuchparameter(
-                email=suchparameter.email,
-                nachname=suchparameter.nachname,
-            )
+        logger.debug("{}", film_dto)
+        return FilmGraphQL(
+            id=film_dto.id,
+            titel=film_dto.titel,
+            erscheinungsjahr=film_dto.erscheinungsjahr,
+            schauspieler=[
+                SchauspielerGraphQL(
+                    id=actor.id,
+                    vorname=actor.vorname,
+                    nachname=actor.nachname,
+                )
+                for actor in film_dto.schauspieler
+            ],
+            drehbuch=DrehbuchGraphQL(
+                id=film_dto.drehbuch.id,
+                titel=film_dto.drehbuch.titel,
+                autor=film_dto.drehbuch.autor,
+                seitenzahl=film_dto.drehbuch.seitenzahl,
+            ),
         )
-        logger.debug("suchparameter_filtered={}", suchparameter_filtered)
-
-        pageable: Final = Pageable.create(size=str(0))
-        try:
-            patienten_dto: Final = _service.find(
-                suchparameter=suchparameter_filtered,
-                pageable=pageable,
-            )
-        except NotFoundError:
-            return []
-        logger.debug("{}", patienten_dto)
-        return patienten_dto.content
 
     @strawberry.field
     def filme(self) -> list[FilmGraphQL]:
         """Filme einschließlich Schauspielern und Drehbüchern lesen."""
+        pageable: Final = Pageable.create(size="0")
         with Session() as session:
-            filme = session.scalars(select(Film)).all()
+            filme = _repo.find_all(pageable=pageable, session=session).content
             return [
                 FilmGraphQL(
                     id=film.id if film.id is not None else -1,
                     titel=film.titel,
                     erscheinungsjahr=film.erscheinungsjahr,
-                    genre=film.genre,
                     schauspieler=[
                         SchauspielerGraphQL(
                             id=actor.id if actor.id is not None else -1,
                             vorname=actor.vorname,
                             nachname=actor.nachname,
-                            geburtsdatum=actor.geburtsdatum,
                         )
                         for actor in film.schauspieler
                     ],
@@ -199,7 +148,7 @@ class Query:
                         id=film.drehbuch.id if film.drehbuch.id is not None else -1,
                         titel=film.drehbuch.titel,
                         autor=film.drehbuch.autor,
-                        inhalt=film.drehbuch.inhalt,
+                        seitenzahl=film.drehbuch.seitenzahl,
                     ),
                 )
                 for film in filme
@@ -208,54 +157,44 @@ class Query:
 
 @strawberry.type
 class Mutation:
-    """Mutations, um Patientendaten anzulegen, zu ändern oder zu löschen."""
+    """Mutations zum Erstellen von Filmen und Einloggen."""
 
     @strawberry.mutation
-    def create(self, patient_input: PatientInput) -> CreatePayload:
-        """Einen neuen Patienten anlegen.
+    def create(self, film_input: FilmInput) -> CreatePayload:
+        """Einen neuen Film anlegen.
 
-        :param patient_input: Daten des neuen Patienten
-        :return: ID des neuen Patienten
+        :param film_input: Daten des neuen Films
+        :return: ID des neuen Films
         :rtype: CreatePayload
-        :raises EmailExistsError: Falls die Emailadresse bereits existiert
-        :raises UsernameExistsError: Falls der Benutzername bereits existiert
         """
-        logger.debug("patient_input={}", patient_input)
+        logger.debug("film_input={}", film_input)
 
-        # Dictonary mit Pydantic validieren
-        patient_model: Final = PatientModel.model_validate(asdict(patient_input))
-
-        patient_dto: Final = _write_service.create(patient=patient_model.to_patient())
-        payload: Final = CreatePayload(id=patient_dto.id)
-
-        logger.debug("{}", payload)
-        return payload
-
-    @strawberry.mutation
-    def film_erstellen(self, film_input: FilmInput) -> int:
-        """Film mit Besetzung und Drehbuch anlegen; Rückgabe ist die Film-ID."""
         film = Film(
+            id=None,
             titel=film_input.titel,
             erscheinungsjahr=film_input.erscheinungsjahr,
-            genre=film_input.genre,
             schauspieler=[
                 Schauspieler(
+                    id=None,
                     vorname=actor.vorname,
                     nachname=actor.nachname,
-                    geburtsdatum=actor.geburtsdatum,
+                    film=None,
                 )
                 for actor in film_input.schauspieler
             ],
             drehbuch=Drehbuch(
+                id=None,
                 titel=film_input.drehbuch.titel,
                 autor=film_input.drehbuch.autor,
-                inhalt=film_input.drehbuch.inhalt,
+                seitenzahl=film_input.drehbuch.seitenzahl,
+                film=None,
             ),
         )
-        with Session() as session:
-            session.add(film)
-            session.commit()
-            return film.id if film.id is not None else -1
+        film_dto: Final = _write_service.create(film=film)
+        payload: Final = CreatePayload(id=film_dto.id)
+
+        logger.debug("{}", payload)
+        return payload
 
     # Mutation, weil evtl. der Login-Zeitpunkt gespeichert wird
     @strawberry.mutation

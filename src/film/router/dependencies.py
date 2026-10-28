@@ -19,32 +19,29 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from film.repository.patient_repository import PatientRepository
-from film.security.dependencies import get_user_service
-from film.service.patient_service import PatientService
-from film.service.patient_write_service import PatientWriteService
-lazy from film.security.user_service import UserService
+from film.repository.film_repository import FilmRepository
+from film.service.film_service import FilmService
+from film.service.film_write_service import FilmWriteService
 
 
-def get_repository() -> PatientRepository:
-    """Factory-Funktion für PatientRepository.
+def get_repository() -> FilmRepository:
+    """Factory-Funktion für FilmRepository.
 
     :return: Das Repository
-    :rtype: PatientRepository
+    :rtype: FilmRepository
     """
-    return PatientRepository()
+    return FilmRepository()
 
 
 def get_service(
-    repo: Annotated[PatientRepository, Depends(get_repository)],
-) -> PatientService:
-    """Factory-Funktion für PatientService."""
-    return PatientService(repo=repo)
+    repo: Annotated[FilmRepository, Depends(get_repository)],
+) -> FilmService:
+    """Factory-Funktion für FilmService."""
+    return FilmService(repo=repo)
 
 
 def get_write_service(
-    repo: Annotated[PatientRepository, Depends(get_repository)],
-    user_service: Annotated[UserService, Depends(get_user_service)],
-) -> PatientWriteService:
-    """Factory-Funktion für PatientWriteService."""
-    return PatientWriteService(repo=repo, user_service=user_service)
+    repo: Annotated[FilmRepository, Depends(get_repository)],
+) -> FilmWriteService:
+    """Factory-Funktion für FilmWriteService."""
+    return FilmWriteService(repo=repo)

@@ -12,6 +12,7 @@ from film.service.exceptions import (
 from film.service.film_dto import DrehbuchDTO, FilmDTO, SchauspielerDTO
 from film.service.film_service import FilmService
 from film.service.film_write_service import FilmWriteService
+from film.service.mailer import send_mail
 
 # https://docs.python.org/3/tutorial/modules.html#importing-from-a-package
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "SchauspielerNotInFilmError",
     "UsernameExistsError",
     "VersionOutdatedError",
+    "send_mail"
 ]

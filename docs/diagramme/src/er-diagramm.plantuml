@@ -24,7 +24,7 @@ entity "Film" {
   * id : integer <<generated>>
   --
   * titel : text
-  * erscheinungsjahr : integer
+  * erscheinungsjahr : date
 }
 
 entity "Drehbuch" {

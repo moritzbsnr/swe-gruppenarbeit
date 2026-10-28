@@ -16,43 +16,21 @@
 """Schema für GraphQL."""
 
 lazy from datetime import date
-lazy from decimal import Decimal
 
 import strawberry
 
-lazy from film.entity import (
-    Facharzt,
-    Familienstand,
-    Geschlecht,
-)
-
 __all__ = [
-    "AdresseInput",
     "CreatePayload",
-    "PatientInput",
-    "RechnungInput",
     "DrehbuchInput",
     "FilmInput",
     "SchauspielerInput",
     "Suchparameter",
 ]
 
-# SDL (schema definition language):
-# type Patient {
-#     nachname: String!
-# }
-# type Query {
-#     patient(patient_id: ID!): Patient!
-#     patienten(input: Suchparameter): [Patient!]
-# }
-# type Mutation {
-#     create(patient_input: PatientInput!): CreatePayload!
-# }
-
 
 @strawberry.input
 class Suchparameter:
-    """Suchparameter für die Suche nach Patienten."""
+    """Suchparameter für die Suche nach Filmen."""
 
     nachname: str | None = None
     """Nachname als Suchkriterium."""
@@ -62,66 +40,17 @@ class Suchparameter:
 
 
 @strawberry.input
-class AdresseInput:
-    """Adresse eines neuen Patienten."""
+class DrehbuchInput:
+    """Drehbuchangaben für einen Film."""
 
-    plz: str
-    """Postleitzahl eines neuen Patienten."""
+    titel: str
+    """Titel des Drehbuchs."""
 
-    ort: str
-    """Ort eines neuen Patienten."""
+    autor: str
+    """Autor des Drehbuchs."""
 
-
-@strawberry.input
-class RechnungInput:
-    """Rechnung zu einem neuen Patienten."""
-
-    betrag: Decimal
-    """Betrag."""
-
-    waehrung: str
-    """Währung als 3-stellige Zeichenkette."""
-
-
-@strawberry.input
-class PatientInput:
-    """Daten für einen neuen Patienten."""
-
-    nachname: str
-    """Nachname."""
-
-    email: str
-    """Emailadresse."""
-
-    kategorie: int
-    """Kategorie."""
-
-    has_newsletter: bool
-    """Angabe, ob der Newsletter abonniert ist."""
-
-    geburtsdatum: date
-    """Geburtsdatum."""
-
-    familienstand: Familienstand
-    """Familienstand."""
-
-    homepage: str | None
-    """Optionale Homepage."""
-
-    geschlecht: Geschlecht
-    """Geschlecht."""
-
-    adresse: AdresseInput
-    """Adresse."""
-
-    rechnungen: list[RechnungInput]
-    """Rechnungen."""
-
-    fachaerzte: list[Facharzt]
-    """Fachärzte."""
-
-    username: str
-    """Benutzername."""
+    seitenzahl: int
+    """Seitentahl des Drehbuchs."""
 
 
 @strawberry.input
@@ -129,36 +58,35 @@ class SchauspielerInput:
     """Schauspielerangaben für einen Film."""
 
     vorname: str
+    """Vorname des Schauspielers."""
+
     nachname: str
-    geburtsdatum: date
-
-
-@strawberry.input
-class DrehbuchInput:
-    """Drehbuchangaben für einen Film."""
-
-    titel: str
-    autor: str
-    inhalt: str
+    """Nachname des Schauspielers."""
 
 
 @strawberry.input
 class FilmInput:
-    """Filmdaten mit Schauspielern und genau einem Drehbuch."""
+    """Daten für einen neuen Film."""
 
     titel: str
-    erscheinungsjahr: int
-    genre: str
+    """Titel des Films."""
+
+    erscheinungsjahr: date
+    """Erscheinungsjahr des Films."""
+
     schauspieler: list[SchauspielerInput]
+    """Schauspieler des Films."""
+
     drehbuch: DrehbuchInput
+    """Drehbuch des Films."""
 
 
 @strawberry.type
 class CreatePayload:
-    """Resultat-Typ, wenn ein neuer Patient angelegt wurde."""
+    """Resultat-Typ, wenn ein neuer Film angelegt wurde."""
 
     id: int
-    """ID des neu angelegten Patienten"""
+    """ID des neu angelegten Films"""
 
 
 @strawberry.type

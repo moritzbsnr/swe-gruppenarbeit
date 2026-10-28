@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+lazy from datetime import date
 
 import strawberry
 
@@ -62,7 +63,7 @@ class FilmDTO:
 
     id: int
     titel: str
-    erscheinungsjahr: int
+    erscheinungsjahr: date
     drehbuch: DrehbuchDTO
     schauspieler: list[SchauspielerDTO]
 

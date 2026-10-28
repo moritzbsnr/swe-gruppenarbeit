@@ -13,32 +13,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Pydantic-Model für die Adresse."""
+"""Pydantic-Model für die Rechnungen."""
 
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
-from film.entity import Adresse
+from film.entity import Schauspieler
 
-__all__ = ["AdresseModel"]
+__all__ = ["SchauspielerModel"]
 
 
-class AdresseModel(BaseModel):
-    """Pydantic-Model für die Adresse."""
+class SchauspielerModel(BaseModel):
+    """Pydantic-Model für den Schauspieler."""
 
-    plz: Annotated[str, StringConstraints(pattern=r"^\d{5}$")]
-    """Postleitzahl"""
-    ort: Annotated[str, StringConstraints(max_length=64)]
-    """Ort"""
+    vorname: Annotated[str, StringConstraints(max_length=128)]
+    """Der Vorname des Schauspielers."""
+    nachname: Annotated[str, StringConstraints(max_length=128)]
+    """Der Nachname des Schauspielers."""
 
     model_config = ConfigDict(
         # Beispiel fuer OpenAPI
         # https://fastapi.tiangolo.com/tutorial/schema-extra-example
         json_schema_extra={
             "example": {
-                "plz": "99999",
-                "ort": "Testort",
+                "vorname": "Max",
+                "nachname": "Mustermann",
             },
         },
         # https://docs.pydantic.dev/latest/concepts/strict_mode/#as-a-configuration-value
@@ -49,16 +49,15 @@ class AdresseModel(BaseModel):
         frozen=True,
     )
 
-    def to_adresse(self) -> Adresse:
-        """Konvertierung in ein Adresse-Objekt für SQLAlchemy.
+    def to_schauspieler(self) -> Schauspieler:
+        """Konvertierung in ein Schauspieler-Objekt für SQLAlchemy.
 
-        :return: Adresse-Objekt für SQLAlchemy
-        :rtype: Adresse
+        :return: Schauspieler-Objekt für SQLAlchemy
+        :rtype: Schauspieler
         """
-        return Adresse(
+        return Schauspieler(
             id=None,
-            plz=self.plz,
-            ort=self.ort,
-            patient_id=None,
-            patient=None,
+            vorname=self.vorname,
+            nachname=self.nachname,
+            film=None,
         )

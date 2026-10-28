@@ -13,33 +13,35 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Pydantic-Model für die Rechnungen."""
+"""Pydantic-Model für die Adresse."""
 
 from typing import Annotated
-lazy from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from film.entity import Rechnung
+from film.entity import Drehbuch
 
-__all__ = ["RechnungModel"]
+__all__ = ["DrehbuchModel"]
 
 
-class RechnungModel(BaseModel):
-    """Pydantic-Model für die rechnung_dict."""
+class DrehbuchModel(BaseModel):
+    """Pydantic-Model für das Drehbuch."""
 
-    betrag: Decimal = Field(strict=False)
-    """Der Betrag. Keine strikte Validierung: JSON -> float in Python."""
-    waehrung: Annotated[str, StringConstraints(pattern=r"^[A-Z]{3}$")]
-    """Die Währung."""
+    titel: Annotated[str, StringConstraints(max_length=128)]
+    """Titel des Drehbuchs"""
+    autor: Annotated[str, StringConstraints(max_length=128)]
+    """Autor des Drehbuchs"""
+    seitenzahl: Annotated[int, Field(gt=0)]
+    """Seitenzahl des Drehbuchs"""
 
     model_config = ConfigDict(
         # Beispiel fuer OpenAPI
         # https://fastapi.tiangolo.com/tutorial/schema-extra-example
         json_schema_extra={
             "example": {
-                "betrag": "999.99",
-                "waehrung": "EUR",
+                "titel": "Testtitel",
+                "autor": "Testautor",
+                "seitenzahl": 100,
             },
         },
         # https://docs.pydantic.dev/latest/concepts/strict_mode/#as-a-configuration-value
@@ -50,16 +52,16 @@ class RechnungModel(BaseModel):
         frozen=True,
     )
 
-    def to_rechnung(self) -> Rechnung:
-        """Konvertierung in ein Rechnung-Objekt für SQLAlchemy.
+    def to_drehbuch(self) -> Drehbuch:
+        """Konvertierung in ein Drehbuch-Objekt für SQLAlchemy.
 
-        :return: Rechnung-Objekt für SQLAlchemy
-        :rtype: Rechnung
+        :return: Drehbuch-Objekt für SQLAlchemy
+        :rtype: Drehbuch
         """
-        return Rechnung(
+        return Drehbuch(
             id=None,
-            betrag=self.betrag,
-            waehrung=self.waehrung,
-            patient_id=None,
-            patient=None,
+            titel=self.titel,
+            autor=self.autor,
+            seitenzahl=self.seitenzahl,
+            film=None,
         )

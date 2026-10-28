@@ -16,36 +16,30 @@
 
 lazy from collections.abc import Sequence
 
-from film.router.health_router import liveness, readiness, router as health_router
-from film.router.hello_router import router as hello_router
-from film.router.patient_router import (
-    get,
+from film.router.film_router import (
     get_by_id,
-    get_nachnamen,
-    patient_router,
-    query,
+    get_filme,
 )
-from film.router.patient_write_router import (
+from film.router.film_write_router import (
     delete_by_id,
-    patient_write_router,
+    film_write_router,
     post,
     put,
 )
+from film.router.health_router import liveness, readiness, router as health_router
+from film.router.hello_router import router as hello_router
 from film.router.shutdown_router import router as shutdown_router, shutdown
 
 __all__: Sequence[str] = [
     "delete_by_id",
-    "get",
+    "film_write_router",
     "get_by_id",
-    "get_nachnamen",
+    "get_filme",
     "health_router",
     "hello_router",
     "liveness",
-    "patient_router",
-    "patient_write_router",
     "post",
     "put",
-    "query",
     "readiness",
     "shutdown",
     "shutdown_router",
