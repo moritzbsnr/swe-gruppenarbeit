@@ -14,6 +14,9 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- https://www.postgresql.org/docs/current/sql-dropindex.html
+CREATE SCHEMA IF NOT EXISTS film AUTHORIZATION film;
+SET search_path TO film;
+
 DROP INDEX IF EXISTS
     adresse_patient_id_idx,
     adresse_plz_idx,

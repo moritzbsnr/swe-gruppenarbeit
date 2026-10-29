@@ -19,6 +19,7 @@
 -- ggf. CHECK(char_length(nachname) <= 255)
 
 -- https://www.postgresql.org/docs/current/manage-ag-tablespaces.html
+SET search_path TO film;
 SET default_tablespace = filmspace;
 
 -- https://www.postgresql.org/docs/current/sql-createtable.html

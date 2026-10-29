@@ -116,7 +116,15 @@ class DbPopulateService:
             ("schauspieler", Schauspieler.__table__),
             ("drehbuch", Drehbuch.__table__),
         ]
-        csv_path: Final = "/init/film/csv"
+        csv_path: Final = (
+            Path(__file__).resolve().parents[4]
+            / "extras"
+            / "compose"
+            / "postgres"
+            / "init"
+            / "film"
+            / "csv"
+        )
         # siehe extras/compose/postgres/compose.init.yml
         with self.engine_admin.connect() as connection:
             connection.execute(text("SET search_path TO film;"))
@@ -146,14 +154,28 @@ class DbPopulateService:
     def _load_csv_file(
         self,
         tabelle: str,
-        csv_path: str,
+        csv_path: Path,
         connection: Connection,
     ) -> None:
         logger.debug("tabelle={}", tabelle)
+        csv_file: Final = csv_path / f"{tabelle}.csv"
+        if csv_file.is_file():
+            driver_connection = connection.connection.driver_connection
+            if driver_connection is None:
+                raise RuntimeError
+            with driver_connection.cursor() as cursor, csv_file.open(
+                encoding="utf-8",
+                newline="",
+            ) as file, cursor.copy(
+                f"COPY {tabelle} FROM STDIN "
+                "(FORMAT csv, QUOTE '\"', DELIMITER ';', HEADER true)",
+            ) as copy:
+                copy.write(file.read())
+            return
+
         copy_cmd: Final = Template(
-            "COPY ${TABELLE} FROM '"
-            + csv_path
-            + "/${TABELLE}.csv' (FORMAT csv, QUOTE '\"', DELIMITER ';', HEADER true);",
+            "COPY ${TABELLE} FROM '/init/film/csv/${TABELLE}.csv' "
+            "(FORMAT csv, QUOTE '\"', DELIMITER ';', HEADER true);",
         ).substitute(TABELLE=tabelle)
         connection.execute(text(copy_cmd))
 
