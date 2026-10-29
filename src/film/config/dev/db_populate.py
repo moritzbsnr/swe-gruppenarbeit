@@ -23,7 +23,7 @@ from typing import Final
 lazy from importlib.resources.abc import Traversable
 
 from loguru import logger
-from sqlalchemy import Connection, create_engine, text
+from sqlalchemy import Connection, create_engine, func, select, text
 
 from film.config.config import resources_path
 from film.config.db import (
@@ -33,6 +33,7 @@ from film.config.db import (
     db_url_admin,
 )
 from film.config.dev_modus import dev_db_populate
+from film.entity import Drehbuch, Film, Schauspieler
 from film.repository import engine
 
 __all__ = ["DbPopulateService", "db_populate", "get_db_populate_service"]
@@ -111,20 +112,28 @@ class DbPopulateService:
     def _load_csv_files(self) -> None:
         logger.debug("begin")
         tabellen: Final = [
-            "film",
-            "schauspieler",
-            "drehbuch",
+            ("film", Film.__table__),
+            ("schauspieler", Schauspieler.__table__),
+            ("drehbuch", Drehbuch.__table__),
         ]
         csv_path: Final = "/init/film/csv"
         # siehe extras/compose/postgres/compose.init.yml
         with self.engine_admin.connect() as connection:
             connection.execute(text("SET search_path TO film;"))
-            for tabelle in tabellen:
+            for tabelle, table in tabellen:
                 self._load_csv_file(
                     tabelle=tabelle,
                     csv_path=csv_path,
                     connection=connection,
                 )
+                sequence_update = select(
+                    func.setval(
+                        func.pg_get_serial_sequence(f"film.{tabelle}", "id"),
+                        func.coalesce(func.max(table.c.id), 999),
+                        func.max(table.c.id).is_not(None),
+                    ),
+                ).select_from(table)
+                connection.execute(sequence_update)
                 connection.commit()
         self.engine_admin.dispose()
 
