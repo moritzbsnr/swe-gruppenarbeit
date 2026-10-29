@@ -102,10 +102,10 @@ natürlich noch nicht gestartet sein dürfen, setzt man folgende Kommandos ab:
 
 ```shell
     # Windows:
-    cd extras\compose\patient
+    cd extras\compose\film
 
     # macOS/Linux:
-    cd extras/compose/patient
+    cd extras/compose/film
 
     docker compose up
 ```

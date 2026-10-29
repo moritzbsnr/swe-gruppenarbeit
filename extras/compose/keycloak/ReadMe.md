@@ -261,7 +261,7 @@ Die Defaultwerte sind in `src\patient\config\keycloak.py` definiert.
 
 ## Client Secret
 
-In der Datei `src\patient\config\resources\app.toml` muss man `client-secret` auf
+In der Datei `src\film\config\resources\app.toml` muss man `client-secret` auf
 folgenden Wert aus _Keycloak_ setzen:
 
 - Menüpunkt `Clients`
@@ -269,7 +269,7 @@ folgenden Wert aus _Keycloak_ setzen:
 - Tab `Credentials` anklicken
 - Die Zeichenkette beim Label `Client Secret` kopieren.
 
-Diese Zeichenkette wird auch für _Bruno_ und `extras\compose\patient\app.toml`
+Diese Zeichenkette wird auch für _Bruno_ und `extras\compose\film\app.toml`
 benötigt.
 
 ## Ergänzung des eigenen Server-Projekts

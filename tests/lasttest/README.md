@@ -29,9 +29,9 @@ Wenn der zu testende Appserver als Docker Container gestartet wird, dann sollte 
 Einstellungen wie z.B. ausführliche Log-Ausgaben, die für die Entwicklung hilfreich sind,
 entfernen:
 
-- in `extras\compose\patient\.env` die Umgebungsvariable `LOGURU_LEVEL=INFO` setzen,
+- in `extras\compose\film\.env` die Umgebungsvariable `LOGURU_LEVEL=INFO` setzen,
   d.h. das Kommentarzeichen entfernen
-- in `extras\compose\patient\film.toml`
+- in `extras\compose\film\film.toml`
   - bei der Table `[film.db]` die Property `log-statements` auskommentieren
   - bei der Table `[film.graphql]` die Property `graphiql-enabled` auskommentieren
 
