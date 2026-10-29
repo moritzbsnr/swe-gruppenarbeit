@@ -25,16 +25,15 @@ from film.repository import (
     DEFAULT_PAGE_SIZE,
     MAX_PAGE_SIZE,
     Pageable,
-    PatientSuchparameter,
+    # FilmSuchparameter,
 )
-lazy from film.entity import Facharzt, Familienstand, Geschlecht
-lazy from film.service import PatientDTO
+lazy from film.service import FilmDTO
 
-__all__ = ["PatientFindModel", "PatientPageModel", "PatientResponseModel"]
+__all__ = ["FilmFindModel", "FilmPageModel", "FilmResponseModel"]
 
 
-class PatientFindModel(BaseModel):
-    """Suchparameter und Pagination für die Patientensuche."""
+class FilmFindModel(BaseModel):
+    """Suchparameter und Pagination für die Film suche."""
 
     email: str | None = None
     nachname: str | None = None
@@ -51,16 +50,16 @@ class PatientFindModel(BaseModel):
         """Erzeugt die Pagination-Daten aus den validierten Parametern."""
         return Pageable(number=self.page, size=self.size)
 
-    def to_suchparameter(self) -> PatientSuchparameter:
-        """Erzeugt Suchparameter für den Service."""
-        return PatientSuchparameter(email=self.email, nachname=self.nachname)
+    # def to_suchparameter(self) -> FilmSuchparameter:
+    #     """Erzeugt Suchparameter für den Service."""
+    #     return FilmSuchparameter(email=self.email, nachname=self.nachname)
 
 
-class AdresseResponseModel(BaseModel):
-    """Adresse als Teil eines Model-Objekts für Patienten als Response.
+class DrehbuchResponseModel(BaseModel):
+    """Drehbuch als Teil eines Model-Objekts für Filme als Response.
 
-    Damit beim Konvertieren von `PatientDTO` in `PatientResponseModel` auch die
-    Attribute von `AdresseDTO`übernommen werden, ist `ConfigDict(from_attributes=True)`
+    Damit beim Konvertieren von `DrehbuchDTO` in `DrehbuchResponseModel` auch die
+    Attribute von `DrehbuchDTO`übernommen werden, ist `ConfigDict(from_attributes=True)`
     notwendig. Siehe
     https://pydantic.dev/docs/validation/latest/concepts/models/#nested-attributes
     """
@@ -71,32 +70,25 @@ class AdresseResponseModel(BaseModel):
     model_config = ConfigDict(from_attributes=True, strict=True, extra="forbid")
 
 
-class PatientResponseModel(BaseModel):
-    """Pydantic-Modell für einen gefundenen Patienten.
+class FilmResponseModel(BaseModel):
+    """Pydantic-Modell für einen gefundenen Film.
 
     FastAPI konvertiert implizit das die Felder in JSON, z.B.
     date als String "2000-01-31" oder Enum CHIRURGIE in "C".
     """
 
     id: int
-    nachname: str
-    email: str
-    kategorie: int
-    has_newsletter: bool
-    geburtsdatum: date
-    homepage: str | None
-    geschlecht: Geschlecht | None
-    familienstand: Familienstand | None
-    adresse: AdresseResponseModel
-    fachaerzte: list[Facharzt]
+    titel: str
+    erscheinungsjahr: date
+    drehbuch: DrehbuchResponseModel
     username: str
 
     model_config = ConfigDict(from_attributes=True, strict=True, extra="forbid")
     # https://pydantic.dev/docs/validation/latest/api/pydantic/config/#pydantic.config.ConfigDict
 
     @classmethod
-    def from_dto(cls, patient: PatientDTO) -> PatientResponseModel:
-        """Konvertiert ein PatientDTO in ein Pydantic-Modell für einen Response.
+    def from_dto(cls, film: FilmDTO) -> FilmResponseModel:
+        """Konvertiert ein FilmDTO in ein Pydantic-Modell für einen Response.
 
         Der Aufruf von `model_validate` erfordert die Übernahme der korrespondierende
         Attributwerte aus dem DTO-Objekt. Dafür ist `ConfigDict(from_attributes=True)`
@@ -105,7 +97,7 @@ class PatientResponseModel(BaseModel):
         Der Aufwand für (unnötige) Validierung ist dabei minimal:
         https://pydantic.dev/docs/validation/latest/concepts/models/#creating-models-without-validation
         """
-        return cls.model_validate(patient)
+        return cls.model_validate(film)
 
 
 class PageMetaModel(BaseModel):
@@ -117,8 +109,8 @@ class PageMetaModel(BaseModel):
     total_pages: int
 
 
-class PatientPageModel(BaseModel):
+class FilmPageModel(BaseModel):
     """Pydantic-Modell für einen Response bei einer Suche mit Pagination."""
 
-    content: tuple[PatientResponseModel, ...]
+    content: tuple[FilmResponseModel, ...]
     page: PageMetaModel
