@@ -84,7 +84,7 @@ def login(
     """Login an der REST-Schnittstelle, um einen Token von Keycloak zu erhalten."""
     login_data: Final = {"username": username, "password": password}
     response: Final = request(
-        method="QUERY",
+        method="POST",
         url=f"{base_url}{token_path}",
         json=login_data,
         timeout=timeout,

@@ -43,12 +43,12 @@ async def request_body_to_dict(request: Request) -> dict[str, Any]:
         return body
 
 
-@router.api_route(path="/token", methods=["QUERY"])
+@router.post("/token")
 def token(
     body: Annotated[dict[str, Any], Depends(request_body_to_dict)],
     service: Annotated[TokenService, Depends(get_token_service)],
 ) -> Response:
-    """Benutzername und Passwort per QUERY-Request, um einen JWT zu erhalten.
+    """Benutzername und Passwort per POST-Request, um einen JWT zu erhalten.
 
     - **body**: Request-Body als dict durch request.json() oder {} im Fehlerfall
     """

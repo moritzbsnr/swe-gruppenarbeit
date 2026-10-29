@@ -47,7 +47,7 @@ def test_login_falsches_passwort() -> None:
 
     # act
     response: Final = request(
-        method="QUERY",
+        method="POST",
         url=f"{base_url}{token_path}",
         json=login_data,
         timeout=timeout,
@@ -65,7 +65,7 @@ def test_login_ohne_daten() -> None:
 
     # act
     response: Final = request(
-        method="QUERY",
+        method="POST",
         url=f"{base_url}{token_path}",
         json=login_data,
         timeout=timeout,
