@@ -71,7 +71,7 @@ def post(
 
 @film_write_router.put(
     "/{film_id}",
-    dependencies=[Depends(RolesRequired([Role.ADMIN, Role.PATIENT]))],
+    dependencies=[Depends(RolesRequired([Role.ADMIN, Role.FILM]))],
 )
 def put(
     film_id: int,
@@ -129,7 +129,7 @@ def put(
 
 @film_write_router.delete(
     "/{film_id}",
-    dependencies=[Depends(RolesRequired([Role.ADMIN, Role.PATIENT]))],
+    dependencies=[Depends(RolesRequired([Role.ADMIN, Role.FILM]))],
 )
 def delete_by_id(
     film_id: int,

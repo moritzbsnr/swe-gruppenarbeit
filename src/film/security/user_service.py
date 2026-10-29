@@ -60,6 +60,7 @@ class UserService:
         )
 
         disable_warnings(InsecureRequestWarning)
+        self.film_role: RoleRepresentation | None = None
         try:
             # UUID fuer KeycloakAdmin.assign_client_role()
             self.client_uuid: str = cast(
@@ -67,16 +68,29 @@ class UserService:
                 self.keycloak_admin.get_client_id(keycloak_admin_config.client_id),
             )
             logger.debug("client_id={} für 'python-client'", self.client_uuid)
-            roles = self.keycloak_admin.get_client_roles(client_id=self.client_uuid)
-            roles_patient = [role for role in roles if role["name"] == "patient"]
-            # Rolle 'patient' in Keycloak fuer KeycloakAdmin.assign_client_role() und
-            # ist ein dict mit Schluesseln "id", "name", "description", ...
-            self.rolle_patient: RoleRepresentation | None = roles_patient[0]
-            logger.debug("rolle_patient={}", self.rolle_patient)
+            self.film_role = self._get_film_role(self.client_uuid)
+            logger.debug("film_role={}", self.film_role)
         except KeycloakConnectionError:
             logger.error("Keine Verbindung zu Keycloak! Ist Keycloak gestartet?")
             self.client_uuid = "N/A"
-            self.rolle_patient: RoleRepresentation | None = None
+
+    def _get_film_role(self, client_uuid: str) -> RoleRepresentation:
+        """Find or create the client role used by film application users."""
+        roles = self.keycloak_admin.get_client_roles(client_id=client_uuid)
+        film_role = next((role for role in roles if role["name"] == "film"), None)
+        if film_role is None:
+            self.keycloak_admin.create_client_role(
+                client_role_id=client_uuid,
+                payload={
+                    "name": "film",
+                    "description": "Film application user",
+                },
+            )
+            film_role = self.keycloak_admin.get_client_role(
+                client_id=client_uuid,
+                role_name="film",
+            )
+        return cast("RoleRepresentation", film_role)
 
     def username_exists(self, username: str) -> bool:
         """Abfrage, ob ein Benutzername bereits existiert.
@@ -123,6 +137,9 @@ class UserService:
         :raises KeycloakError: Falls mit Keycloak ein Fehler auftritt
         """
         logger.debug("user={}", user)
+        if self.film_role is None:
+            logger.error("Die Keycloak-Rolle 'film' ist nicht verfügbar")
+            raise RuntimeError
 
         # https://www.keycloak.org/docs-api/latest/rest-api/#_users:
         # POST /admin/realms/{realm}/users
@@ -143,7 +160,7 @@ class UserService:
         self.keycloak_admin.assign_client_role(
             user_id=user_id,
             client_id=self.client_uuid,
-            roles=[self.rolle_patient],
+            roles=[self.film_role],
         )
         return user_id
 

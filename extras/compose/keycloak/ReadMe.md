@@ -202,7 +202,7 @@ Das Mapping von Port `8443` auf `8843` und von `8080` auf `8880` ist in
             Breadcrumb "Client details" anklicken
             Tab "Roles"
                 <Create Role> anklicken
-                Role name       patient
+                Role name       film
                 <Save> anklicken
 
     # https://www.keycloak.org/docs/latest/server_admin/index.html#assigning-permissions-using-roles-and-groups

@@ -74,7 +74,7 @@ class KeycloakPopulateService:
 
         with csv_config_path.open() as csv_file:
             csv_reader = DictReader(csv_file, delimiter=";")
-            required_fields = {"email", "nachname", "username"}
+            required_fields = {"email", "nachname", "username", "vorname"}
             missing_fields = required_fields - set(csv_reader.fieldnames or [])
             if missing_fields:
                 logger.error(
@@ -90,10 +90,12 @@ class KeycloakPopulateService:
 
                 email = row.get("email")
                 nachname = row.get("nachname")
-                if not username or not email or not nachname:
+                vorname = row.get("vorname")
+                if not username or not email or not nachname or not vorname:
                     logger.error(
                         f"CSV-Datei {csv_config_path}, Zeile {row_number}: "
-                        "username, email und nachname müssen ausgefüllt sein"
+                        "username, email, nachname und vorname "
+                        "müssen ausgefüllt sein"
                     )
                     raise InvalidUserCsvError
 
@@ -101,8 +103,8 @@ class KeycloakPopulateService:
                     username=username,
                     email=email,
                     nachname=nachname,
-                    vorname=nachname,
-                    roles=[Role.PATIENT],
+                    vorname=vorname,
+                    roles=[Role.FILM],
                     password="p",  # ruff: ignore[hardcoded-password-func-arg] # NOSONAR
                 )
                 self.user_service.create_user(user=user)

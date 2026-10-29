@@ -24,5 +24,8 @@ class Role(StrEnum):
     ADMIN = "ADMIN"
     """Rolle für die Administration."""
 
+    FILM = "FILM"
+    """Rolle für registrierte Film-Benutzer."""
+
     PATIENT = "PATIENT"
-    """Rolle registrierter Patient."""
+    """Kompatibilitätsrolle für bestehende Patient-Endpunkte."""
