@@ -122,6 +122,34 @@ def login_graphql(
     return token
 
 
+def create_film() -> int:
+    """Legt einen Film an und liefert seine ID zurück."""
+    film: Final = {
+        "titel": "Integrationstestfilm",
+        "erscheinungsjahr": "2024-01-31",
+        "schauspieler": [{"vorname": "Test", "nachname": "Darsteller"}],
+        "drehbuch": {
+            "titel": "Integrationstests",
+            "autor": "Testautor",
+            "seitenzahl": 42,
+        },
+    }
+    response: Final = post(
+        rest_url,
+        json=film,
+        timeout=timeout,
+        verify=certificate_path,
+    )
+    if response.status_code != HTTPStatus.CREATED:
+        raise RuntimeError(
+            f"create_film() mit Statuscode {response.status_code}: {response.text}",
+        )
+    location: Final[str | None] = response.headers.get("Location")
+    if location is None:
+        raise RuntimeError("create_film() ohne Location-Header")
+    return int(location.rsplit("/", maxsplit=1)[-1])
+
+
 def db_populate() -> None:
     """Neuladen der DB."""
     token: Final = login()

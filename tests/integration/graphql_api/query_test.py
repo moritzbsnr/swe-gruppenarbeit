@@ -1,289 +1,86 @@
-# Copyright (C) 2022 - present Juergen Zimmermann, Hochschule Karlsruhe
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-"""Tests für Queries mit GraphQL."""
+"""Tests für GraphQL-Queries zu Filmen."""
 
 from http import HTTPStatus
 from typing import Final
 
 import pytest
-from common_api_test import certificate_path, graphql_url, login_graphql, timeout
+from common_api_test import (
+    certificate_path,
+    create_film,
+    graphql_url,
+    login_graphql,
+    timeout,
+)
 from requests import post
 
-GRAPHQL_PATH: Final = "/graphql"
-
 
 @pytest.mark.graphql
 @pytest.mark.query
-def test_query_id() -> None:
-    # arrange
+def test_query_film() -> None:
+    film_id: Final = create_film()
     token: Final = login_graphql()
-    assert token is not None
-    headers: Final = {"Authorization": f"Bearer {token}"}
-
     query: Final = {
-        "query": """
-            {
-                patient(patientId: "20") {
-                    version
-                    nachname
-                    email
-                    kategorie
-                    hasNewsletter
-                    geburtsdatum
-                    homepage
-                    geschlecht
-                    familienstand
-                    adresse {
-                        plz
-                        ort
-                    }
-                    fachaerzte
-                    username
-                }
-            }
-        """,
-    }
-
-    # act
-    response: Final = post(
-        graphql_url,
-        json=query,
-        headers=headers,
-        timeout=timeout,
-        verify=certificate_path,
-    )
-
-    # assert
-    assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    data: Final = response_body["data"]
-    assert data is not None
-    patient: Final = data["patient"]
-    assert isinstance(patient, dict)
-    assert response_body.get("errors") is None
-
-
-@pytest.mark.graphql
-@pytest.mark.query
-def test_query_id_notfound() -> None:
-    # arrange
-    token: Final = login_graphql()
-    assert token is not None
-    headers: Final = {"Authorization": f"Bearer {token}"}
-
-    query: Final = {
-        "query": """
-            {
-                patient(patientId: "999999") {
-                    nachname
-                }
-            }
-        """,
-    }
-
-    # act
-    response: Final = post(
-        graphql_url,
-        json=query,
-        headers=headers,
-        timeout=timeout,
-        verify=certificate_path,
-    )
-
-    # assert
-    assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    assert response_body["data"]["patient"] is None
-    assert response_body.get("errors") is None
-
-
-@pytest.mark.graphql
-@pytest.mark.query
-def test_query_email() -> None:
-    # arrange
-    token: Final = login_graphql()
-    assert token is not None
-    headers: Final = {"Authorization": f"Bearer {token}"}
-
-    query: Final = {
-        "query": """
-            {
-                patienten(suchparameter: {email: "admin@acme.com"}) {
+        "query": f"""
+            {{
+                film(filmId: "{film_id}") {{
                     id
-                    version
-                    nachname
-                    email
-                    kategorie
-                    hasNewsletter
-                    geburtsdatum
-                    homepage
-                    geschlecht
-                    familienstand
-                    adresse {
-                        plz
-                        ort
-                    }
-                    fachaerzte
-                    username
-                }
-            }
+                    titel
+                    drehbuch {{ titel autor seitenzahl }}
+                    schauspieler {{ vorname nachname }}
+                }}
+            }}
         """,
     }
 
-    # act
     response: Final = post(
         graphql_url,
         json=query,
-        headers=headers,
+        headers={"Authorization": f"Bearer {token}"},
         timeout=timeout,
         verify=certificate_path,
     )
 
-    # assert
     assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    patienten: Final = response_body["data"]["patienten"]
-    assert isinstance(patienten, list)
-    assert len(patienten) > 0
-    assert response_body.get("errors") is None
+    body: Final = response.json()
+    assert body.get("errors") is None
+    film: Final = body["data"]["film"]
+    assert film["id"] == film_id
+    assert film["titel"] == "Integrationstestfilm"
+    assert film["drehbuch"]["autor"] == "Testautor"
+    assert film["schauspieler"][0]["nachname"] == "Darsteller"
 
 
 @pytest.mark.graphql
 @pytest.mark.query
-def test_query_email_notfound() -> None:
-    # arrange
+def test_query_film_not_found() -> None:
     token: Final = login_graphql()
-    assert token is not None
-    headers: Final = {"Authorization": f"Bearer {token}"}
-
-    query: Final = {
-        "query": """
-            {
-                patienten(suchparameter: {email: "not.found@acme.com"}) {
-                    id
-                }
-            }
-        """,
-    }
-
-    # act
     response: Final = post(
         graphql_url,
-        json=query,
-        headers=headers,
+        json={"query": '{ film(filmId: "999999999") { id titel } }'},
+        headers={"Authorization": f"Bearer {token}"},
         timeout=timeout,
         verify=certificate_path,
     )
 
-    # assert
     assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    patienten: Final = response_body["data"]["patienten"]
-    assert isinstance(patienten, list)
-    assert len(patienten) == 0
-    assert response_body.get("errors") is None
+    body: Final = response.json()
+    assert body.get("errors") is None
+    assert body["data"]["film"] is None
 
 
 @pytest.mark.graphql
 @pytest.mark.query
-def test_query_nachname() -> None:
-    # arrange
-    token: Final = login_graphql()
-    assert token is not None
-    headers: Final = {"Authorization": f"Bearer {token}"}
-
-    query: Final = {
-        "query": """
-            {
-                patienten(suchparameter: {nachname: "Alice"}) {
-                    id
-                    version
-                    nachname
-                    email
-                    kategorie
-                    hasNewsletter
-                    geburtsdatum
-                    homepage
-                    geschlecht
-                    familienstand
-                    adresse {
-                        plz
-                        ort
-                    }
-                    fachaerzte
-                    username
-                }
-            }
-        """,
-    }
-
-    # act
+def test_query_filme() -> None:
+    film_id: Final = create_film()
     response: Final = post(
         graphql_url,
-        json=query,
-        headers=headers,
+        json={"query": "{ filme { id titel } }"},
         timeout=timeout,
         verify=certificate_path,
     )
 
-    # assert
     assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    patienten: Final = response_body["data"]["patienten"]
-    assert isinstance(patienten, list)
-    assert len(patienten) > 0
-    assert response_body.get("errors") is None
-
-
-@pytest.mark.graphql
-@pytest.mark.query
-def test_query_nachname_notfound() -> None:
-    # arrange
-    token: Final = login_graphql()
-    assert token is not None
-    headers: Final = {"Authorization": f"Bearer {token}"}
-
-    query: Final = {
-        "query": """
-            {
-                patienten(suchparameter: {nachname: "Nichtvorhanden"}) {
-                    id
-                }
-            }
-        """,
-    }
-
-    # act
-    response: Final = post(
-        graphql_url,
-        json=query,
-        headers=headers,
-        timeout=timeout,
-        verify=certificate_path,
-    )
-
-    # assert
-    assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    patienten: Final = response_body["data"]["patienten"]
-    assert isinstance(patienten, list)
-    assert len(patienten) == 0
+    body: Final = response.json()
+    assert body.get("errors") is None
+    filme: Final = body["data"]["filme"]
+    assert any(film["id"] == film_id for film in filme)

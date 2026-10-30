@@ -1,19 +1,4 @@
-# Copyright (C) 2022 - present Juergen Zimmermann, Hochschule Karlsruhe
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-"""Tests für Mutations mit GraphQL."""
+"""Tests für GraphQL-Mutationen zu Filmen."""
 
 from http import HTTPStatus
 from typing import Final
@@ -26,32 +11,19 @@ from requests import post
 @pytest.mark.graphql
 @pytest.mark.mutation
 def test_create() -> None:
-    # arrange
     query: Final = {
         "query": """
             mutation {
                 create(
-                    patientInput: {
-                        nachname: "Nachnamegraphql"
-                        email: "testgraphql@graphql.de"
-                        kategorie: 1
-                        hasNewsletter: true
-                        geburtsdatum: "2022-01-31"
-                        homepage: "https://graphql.de"
-                        geschlecht: WEIBLICH
-                        familienstand: LEDIG
-                        fachaerzte: [CHIRURGIE]
-                        adresse: {
-                            plz: "99999"
-                            ort: "Mutationort"
+                    filmInput: {
+                        titel: "GraphQL Integrationstestfilm"
+                        erscheinungsjahr: "2024-01-31"
+                        schauspieler: [{ vorname: "Test", nachname: "Darsteller" }]
+                        drehbuch: {
+                            titel: "GraphQL Drehbuch"
+                            autor: "Testautor"
+                            seitenzahl: 42
                         }
-                        rechnungen: [
-                            {
-                                betrag: "999.99"
-                                waehrung: "EUR"
-                            }
-                        ]
-                        username: "testgraphql"
                     }
                 ) {
                     id
@@ -60,7 +32,6 @@ def test_create() -> None:
         """,
     }
 
-    # act
     response: Final = post(
         graphql_url,
         json=query,
@@ -68,42 +39,28 @@ def test_create() -> None:
         verify=certificate_path,
     )
 
-    # assert
-    assert response is not None
     assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    assert isinstance(response_body["data"]["create"]["id"], int)
-    assert response_body.get("errors") is None
+    body: Final = response.json()
+    assert body.get("errors") is None
+    assert isinstance(body["data"]["create"]["id"], int)
 
 
 @pytest.mark.graphql
 @pytest.mark.mutation
 def test_create_invalid() -> None:
-    # arrange
     query: Final = {
         "query": """
             mutation {
                 create(
-                    patientInput: {
-                        nachname: "falscher_nachname"
-                        email: "falsche_email@"
-                        kategorie: 1
-                        hasNewsletter: true
-                        geburtsdatum: "2022-01-31"
-                        homepage: "https://?!"
-                        geschlecht: WEIBLICH
-                        familienstand: LEDIG
-                        fachaerzte: [CHIRURGIE]
-                        adresse: {
-                            plz: "1234"
-                            ort: "Testort"
+                    filmInput: {
+                        titel: "Ungültiger Film"
+                        erscheinungsjahr: "kein-datum"
+                        schauspieler: [{ vorname: "Test", nachname: "Darsteller" }]
+                        drehbuch: {
+                            titel: "Ungültig"
+                            autor: "Testautor"
+                            seitenzahl: 42
                         }
-                        rechnungen: [{
-                            betrag: "1"
-                            waehrung: "EU"
-                        }]
-                        username: "testgraphql"
                     }
                 ) {
                     id
@@ -112,7 +69,6 @@ def test_create_invalid() -> None:
         """,
     }
 
-    # act
     response: Final = post(
         graphql_url,
         json=query,
@@ -120,11 +76,8 @@ def test_create_invalid() -> None:
         verify=certificate_path,
     )
 
-    # assert
     assert response.status_code == HTTPStatus.OK
-    response_body: Final = response.json()
-    assert isinstance(response_body, dict)
-    assert response_body["data"] is None
-    errors: Final = response_body["errors"]
-    assert isinstance(errors, list)
-    assert len(errors) == 1
+    body: Final = response.json()
+    assert body["data"] is None
+    assert isinstance(body["errors"], list)
+    assert body["errors"]
